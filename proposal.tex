@@ -1,6 +1,77 @@
-\documentclass[12pt]{article}
+\documentclass{article}
 \title{Microcontrollers Deserve Protection Too}
+\author{}
+\date{}
 
 \begin{document}
   \maketitle
+
+  \section{Overview}
+
+  Traditionally, microcontrollers ran monolithic applications that were written
+  once to run for months or years untouched~\footnote{In a forest somewhere in
+  the Amazon, collecting data about honey bee mating behavior.}. As a result,
+  unlike desktop and server operating systems, embedded operating systems like
+  TinyOS assume that applications are trustworthy and give them unfettered
+  access to the underlying hardware. However, we believe the world has changed.
+  Modern microcontrollers power consumer products like fitness bands and smart
+  watches~\footnote{the Pebble smartwatch and Fitbit both run on a STM
+  Cortex-M3, while the Jawbone UP runs on an MSP420}. These products often
+  include multiple independent applications sharing the hardware which may be
+  installed and/or updated by the end-user. We must rethink how we design
+  embedded operating systems to accomodate these new trends, understanding that
+  traditional desktop operating systems are too power hungry and rely on
+  hardware mechanisms (such as an MMU) not available in embedded
+  microporcessors.
+
+  Tock is a next-generation embedded operating system for the ARM Cortex-M
+  series of microprocessors. Tock provides isolation and protection between
+  applications and the kernel using three mechanisms at different levels:
+
+  \begin{enumerate}
+    \item \emph{Language level protection} Tock is written in Rust, a type-safe,
+    compiled, low-level language. Tock's enforces isolation between it's
+    internal components (e.g. core device drivers) using language-level
+    protection~\footnote{Yeah, I know, this is really vague right now}.
+    
+    \item \emph{Software-managed memory protection} Modern ARM Cortex-M
+    processors provide a hardware protection mechanism called Memory Protection
+    Unit (MPU).  An MPU allows the kernel to set access permissions on a fixed
+    number of memory regions which are enforced on application code. Unlike the
+    Memory Manage Units (MMUs) in application processors, MPUs do not provide
+    virtual addressing, however, like MMUs illegal accesses to memory regions
+    (e.g. writing to read-only memory) are caught and result in a fault to the
+    kernel. Tock uses the MPU to protect kernel and driver memory from untrusted
+    application code and different applications from one another, while
+    providing applications direct access to hardware registers, such as the
+    GPIO.
+
+    \item \emph{Physically isolated cores} Modern embedded platforms often
+    involve multiple microprocessors in practice. For example, both the CC2540
+    and the NRF51822 Bluetooth modules are, in fact, full blown microprocessors,
+    but many products include them in addition to another
+    microprocessor~\footnote{Well, at least Coin does that}. Tock leverage
+    multiprocessor environments to enforce another layer of isolation between
+    applications and the kernel, by running different application components on
+    different cores depending on their needs to access specific hardware, as
+    well as power and performance constraints.
+
+  \end{enumerate}
+
+  \section{Challenges}
+
+  \begin{enumerate}
+    \item The compiler and OS should synthesize a multi-core execution plan
+    subject to developer configuration/annotation in the code and, potentially,
+    real time constraints.
+
+    \item What is the execution model?
+
+    \item The kernel must provide a way of inspecting the state of the system
+    during debugging. For example, in TinyOS, timer callbacks are determined
+    statically, but this would not be the case in a syscall based system with
+    dynamic applications. The kernel should therefore provide a way to query,
+    e.g., which timer's are currently outstanding.
+
+  \end{enumerate}
 \end{document}
