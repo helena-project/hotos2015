@@ -1,0 +1,15 @@
+\section{Challenges}
+\begin{enumerate}
+  \item The compiler and OS should synthesize a multi-core execution plan
+  subject to developer configuration/annotation in the code and, potentially,
+  real time constraints.
+
+  \item What is the execution model?
+
+  \item The kernel must provide a way of inspecting the state of the system
+  during debugging. For example, in TinyOS, timer callbacks are determined
+  statically, but this would not be the case in a syscall based system with
+  dynamic applications. The kernel should therefore provide a way to query,
+  e.g., which timer's are currently outstanding.
+
+\end{enumerate}

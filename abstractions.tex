@@ -1,0 +1,36 @@
+\section{Abstractions}
+
+The basic unit of program composition in Tock is a protection domain. A
+protection domain describes a set of access rights to physical memory. 
+
+There are be one or more event queues. Every event is associated with
+a protection domain and executes within it when it begins. An event
+may cross into another protection domain through a function call
+(language protection) or a call gate (software protection), or
+may invoke it asynchronously through a message (software protection,
+hardware protection).
+
+For example, the operating system kernel runs in one protection domain,
+which has access to private kernel memory and a region of memory used to
+pass messages to the kernel. The kernel memory is not accessible by other
+domains, but the message memory is. The kernel reserves the IO pins and buses
+that control its peripherals (e.g., the radio, the bus to another core). 
+
+An application runs in another protection domain. It has access to its own
+memory, the kernel message memory, and the subset of IO pins and buses
+which the kernel does not manage/control.
+
+The operating system can be broken into multiple protection domains. For
+example, on Firestorm, any code running on the squall must be in a different
+protection domain than code running on the storm core. Like a microkernel
+architecture, the OS can invoke core services in separate protection domains.
+The decision of whether to place drivers/etc. in the main OS protection domain
+or in other domains is driven by a combination of security concerns and 
+hardware capabilities.
+
+When a developer writes an application, it consists of potentially multiple
+protection domains, some in the form of libraries, some in the form of
+application code, some in the form of drivers. The development environment
+decides how to divide this code across the cores based on harwdware capabilites
+and software operations. E.g., a filter on Bluetooth messages will likely be 
+placed on the squall, while the IPv6 stack will likely be placed on the storm.
