@@ -1,4 +1,4 @@
-all: proposal.pdf
+all: paper.pdf
 
 %.pdf:
 	latexmk -output-directory=out -pdf $*.tex
