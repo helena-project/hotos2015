@@ -1,0 +1,45 @@
+\section{Other Operating Systems}
+
+Embedded systems have historically had highly fragmented application domains,
+each with a vertically integrated set of software and technology that
+applications can highly customize as needed. However, until now, a common
+assumption in almost all embedded systems is that a single group of developers
+is responsible for all of the code running on a device. They might borrow
+or use libraries or operating systems from elsewhere, but that code is 
+completely under their control to modify and inspect as needed. Making
+this assumption means that embedded operating systems typically have
+minimal or no system security to protect themselves from malicious code
+or applications.
+
+One extreme example of this approach is TinyOS, which makes no
+distinction between application and operating system code. Application
+code specifies which abstractions and services it needs from the
+operating system, and the compilation toolchain uses this information
+to build an application-specific version of the OS that is compiled
+and directly linked with application code~\cite{tinyos}. Later
+versions of TinyOS included a threading library with which one could
+dynamically load and link applications~\cite{tosthreads}. These
+threads, however, operate under the assumption that the application
+developer and the system maintainer are the same person: there are no
+security checks and since there is no memory protection applications
+have unlimited access to the entire system.
+
+The Contiki operating system is another microcontroller-based
+operating system. It has led TCP/IP integration with embedded systems
+through libraries such as the $\mu$IP stack and a fully
+certified IPv6 stack contributed by Cisco in 2008~\cite{contiki}. 
+Security in Contiki is limited to
+link-layer encryption and integrity and the OS does not support
+dynamically loaded applications.
+
+FreeRTOS is an open-source commercial operating system intended to 
+support a wide range of applications on many different processors. It
+is used in applications from the Nest Protect to smart meters to
+thermal monitoring systems. FreeRTOS supports for network security
+through TLS~\cite{tls} and DTLS~\cite{dtls}, but operates under the
+assumption that all code is trusted. For example, any task in the system
+can spawn a task that runs in privileged mode and arbitrarily modify
+% http://www.freertos.org/a00125.html
+% http://sourceforge.net/p/freertos/discussion/382005/thread/7b135e95
+the system~\cite{rtos-tasks,rtos-sec}.
+
