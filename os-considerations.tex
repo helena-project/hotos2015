@@ -1,11 +1,52 @@
 \section{Operating System Considerations}
 
+We believe that new trends in the ecosystem of embedded applications require a
+new set of goals for embedded opearting systems. \name is a next-generation
+embedded operating system we are currently developing that takes advantage of
+recent developments in microcontroller harware and modern programming language
+features to enable multi-application embedded products. \name is designed to
+support a number of goals:
+
+{\bf Event-driven execution model}.
+
+{\bf Flexible application programming}. Unlike previous embedded operating
+systems like TinyOS~\cite{tinyos} and Contiki~\cite{contiki} which are linked
+directly into the application, \name provides a system-call interface. This
+allows developers to write applications in any language that can support the
+ABI. For example, the \name kernel is written in Rust~\cite{rust}, applications
+can trivially written in C, and we are working on a port of Lua~\cite{lua}.
+
+{\bf Flexible kernel}. Embedded hardware platforms are extremely varried. While
+\name specifically targets the ARM Cortex-M series of microcontrollers, platform
+developers are free to combine a microcontroller with any number of peripheral
+devices connected over busses or directly through the GPIO. This means platform
+developers must be able to customize the device drivers compiled with the kernel
+to their platform. \name follows previous operating systems in separating
+drivers for core peripherals (SPI, USART, GPIO, etc) and device drivers (radio,
+flash, etc) into separate layers. \name differs from previous operating systems
+in enforcing safety policies on device drivers through the Rust type system.
+\name prevents drivers from subverting Rust's memory satefy by restricting
+device drivers to a safe subset of the Rust language.~\endnote{Rust allows code
+to circumvent the type system using the \tt{unsafe} keyword. \name uses a
+compiler flag that disallows this keyword when compiling device drivers.} \name
+also ensures, at compile time, that at most one driver has access to a specific
+hardware resource---multiplexing must be done explicitly in the core peripheral
+driver or through an intermediate interface. Finally, \name ensures device
+drivers cannot corrupt kernel memory through careful choice of interfaces. \name
+ensures that \name does not protect the kernel from denial of service attacks by
+drivers.
+
+{\bf Reliability}. Unlike most desktop and server applications, embedded
+applications must continue to run without end-user intervention. There is no
+console to indicate to the user that an application has crashed. Even if a crash
+could be communicated to the user, there is little action she could take. While
+a Blue-Screen-Of-Death is annoying on a desktop or server, it is
+unacceptable in embedded systems. \name applications cannot corrupt the kernel
+or other applications. Moreover, they are event-driven by default, allowing 
+
 \begin{enumerate}
-\item \bf{Isolation}
 
-\item \bf{Kernel Extension Safety}
+\item {\bf Direct Access to Hardware}
 
-\item \bf{Direct Access to Hardware}
-
-\item \bf{Power Consumption / SleepWalking}
+\item {\bf Power Consumption SleepWalking}
 \end{enumerate}
