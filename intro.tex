@@ -16,37 +16,65 @@ traditional desktop operating systems are too power hungry and rely on
 hardware mechanisms (such as an MMU) not available in embedded
 microporcessors.
 
-Tock is a next-generation embedded operating system for the ARM Cortex-M
-series of microprocessors. Tock provides isolation and protection between
-applications and the kernel using three mechanisms at different levels:
+The key abstraction lacking in traditional embedded operating systems, but
+essential to enable the next generation of embedded devices is protection. In
+operating systems like TinyOS and Contiki, applications are linked into the
+operating system at compile time and all parts of the code have access to the
+same address- and name-space. FreeRTOS has a notion of \emph{tasks} which run
+independently of the operating system, but this separation is not enforced --
+applications have complete access to operating system memory regions and
+unfettered hardware access.
+
+We argue that embedded operating systems should take advantage of three
+protection mechanisms recently available to embedded systems builders:
 
 \begin{enumerate}
-  \item \emph{Language level protection} Tock is written in Rust, a type-safe,
-  compiled, low-level language. Tock's enforces isolation between it's
-  internal components (e.g. core device drivers) using language-level
-  protection~\endnote{Yeah, I know, this is really vague right now}.
-  
-  \item \emph{Software-managed memory protection} Modern ARM Cortex-M
-  processors provide a hardware protection mechanism called Memory Protection
-  Unit (MPU).  An MPU allows the kernel to set access permissions on a fixed
-  number of memory regions which are enforced on application code. Unlike the
-  Memory Manage Units (MMUs) in application processors, MPUs do not provide
-  virtual addressing, however, like MMUs illegal accesses to memory regions
-  (e.g. writing to read-only memory) are caught and result in a fault to the
-  kernel. Tock uses the MPU to protect kernel and driver memory from untrusted
-  application code and different applications from one another, while
-  providing applications direct access to hardware registers, such as the
-  GPIO.
-
-  \item \emph{Physically isolated cores} Modern embedded platforms often
-  involve multiple microprocessors in practice. For example, both the CC2540
-  and the NRF51822 Bluetooth modules are, in fact, full blown microprocessors,
-  but many products include them in addition to another
-  microprocessor~\endnote{Well, at least Coin does that}. Tock leverage
-  multiprocessor environments to enforce another layer of isolation between
-  applications and the kernel, by running different application components on
-  different cores depending on their needs to access specific hardware, as
-  well as power and performance constraints.
-
+  \item \emph{Language level protection} including type safety, memory safety
+    and thread safety support in modern systems programming languages.
+  \item \emph{Software-managed memory protection} available in the newest
+    low-power embedded microcontrollers allow the operating system to enforce
+    privilege separation in hardware without the cost or complexity of a virtual
+    memory.
+  \item \emph{Physically timing protection}. Many new embedded products
+    integrate multiple microcontrollers~\endnote{Nest protect has no less than
+    three Cortex-M microcontrollers. An M4 for the application controller, an
+  M0+ used as a peripheral coprocessor and 802.15.4 SoC with an onboard M3}.
+  Operating systems should take advantage of this to guard time-sensitive
+  components from others that might compromise timing guarantees (e.g.
+  computation heavy tasks).
 \end{enumerate}
+
+We are exploring these protection mechanisms in a new embedded operating system,
+\name.
+
+\subsection{Language Level Protection}
+
+\name is written in Rust, a type-safe, compiled, low-level language. Tock's
+enforces isolation between it's internal components (e.g. core device drivers)
+using language-level protection~\endnote{Yeah, I know, this is really vague
+right now}.
+
+\subsection{Memory Protection}
+
+Modern ARM Cortex-M processors provide a hardware protection mechanism called
+Memory Protection Unit (MPU).  An MPU allows the kernel to set access
+permissions on a fixed number of memory regions which are enforced on
+application code. Unlike the Memory Manage Units (MMUs) in application
+processors, MPUs do not provide virtual addressing, however, like MMUs illegal
+accesses to memory regions (e.g. writing to read-only memory) are caught and
+result in a fault to the kernel. Tock uses the MPU to protect kernel and driver
+memory from untrusted application code and different applications from one
+another, while providing applications direct access to hardware registers, such
+as the GPIO.
+
+\subsection{Multiple Processors}
+
+Modern embedded platforms often involve multiple microprocessors in practice.
+For example, both the CC2540 and the NRF51822 Bluetooth modules are, in fact,
+full blown microprocessors, but many products include them in addition to
+another microprocessor~\endnote{Well, at least Coin does that}. Tock leverage
+multiprocessor environments to enforce another layer of isolation between
+applications and the kernel, by running different application components on
+different cores depending on their needs to access specific hardware, as well as
+power and performance constraints.
 
