@@ -40,13 +40,13 @@ drivers.
 applications must continue to run without end-user intervention. There is no
 console to indicate to the user that an application has crashed. Even if a crash
 could be communicated to the user, there is little action she could take. While
-a Blue-Screen-Of-Death is annoying on a desktop or server, it is
-unacceptable in embedded systems. \name applications cannot corrupt the kernel
-or other applications. Moreover, they are event-driven by default, allowing 
+a Blue-Screen-Of-Death is annoying on a desktop or server, it is unacceptable in
+embedded systems. Unlike other embedded operating systems, in \name,
+applications cannot corrupt the kernel or other applications. Moreover, certain
+parts of the kernel (e.g. contributed device drivers) are isolated using
+a strong language type system.
 
-\begin{enumerate}
+{\bf Direct Access to Hardware}. Embedded software developers are accustomed to
+programming with direct access to hardware. 
 
-\item {\bf Direct Access to Hardware}
-
-\item {\bf Power Consumption SleepWalking}
-\end{enumerate}
+{\bf Power Consumption SleepWalking}
