@@ -1,39 +1,75 @@
 \section{Introduction}
 
-Traditionally, microcontrollers ran monolithic applications that were written
-once to run for months or years untouched~\endnote{In a forest somewhere in
-the Amazon, collecting data about honey bee mating behavior.}. As a result,
-unlike desktop and server operating systems, embedded operating systems like
-TinyOS assume that applications are trustworthy and give them unfettered
-access to the underlying hardware. However, we believe the world has changed.
-Modern microcontrollers power consumer products like fitness bands and smart
-watches~\endnote{the Pebble smartwatch and Fitbit both run on a STM
-Cortex-M3, while the Jawbone UP runs on an MSP420}. These products often
-include multiple independent applications sharing the hardware which may be
-installed and/or updated by the end-user. We must rethink how we design
-embedded operating systems to accomodate these new trends, understanding that
-traditional desktop operating systems are too power hungry and rely on
-hardware mechanisms (such as an MMU) not available in embedded
-microporcessors.
+% This may be dipping a little too far back into history and waxing a little
+% too poetic as a consequence
+In 1882, Charles Babbage designed the first automated computer, the Difference
+Engine. Fifteen years later, he evolved the design to create a general-purpose
+machine, the Analytical Engine. Since the birth of computing, new
+computational platforms have followed this trend, beginning as specialized
+devices and evolving to general purpose platforms.
+Most recently, the mobile phone evolved from a single-purpose voice
+communication platform to add text communication, to run small Java applets,
+and eventually to the full-fledged computing devices they are today, with
+voice communication acting as simply another application on the device.
 
-Tock is a next-generation embedded operating system for the ARM Cortex-M
-series of microprocessors. Tock provides isolation and protection between
-applications and the kernel using three mechanisms at different levels:
+Today, we see the emergence of ``intelligent'' things at varying steps along
+this progression: Smart watches with a clock application and a limited set of
+other applets, smart light bulbs that support single functions---on and off,
+brighter and dimmer---, smarter light bulbs that pulse with the ambient music.
+%
+Traditionally, these embedded devices have been single-purpose
+single-application devices. As a result, embedded ``operating systems'' have
+generated monolithic program images, running a single application and
+providing unfettered access to underlying hardware.
+%
+It is time for embedded operating systems to evolve from their
+application-specific nature to a general-purpose operating system,
+%We argue that the time has come for a true embedded operating system,
+one that enables and encourages multiple applications, provides both hardware
+abstractions and low-level hardware access, and offers critical services for
+the applications of the Internet of Things.
+%Today's fitness tracker can easily double as a medication reminder, if only
+%there was a means to install and run another application.
+
+% Hue: STM32F + CC2530 (zigbee radio)
+% Pebble: Also an ST M3
+% Jawbone: MSP430F5528
+% Fitbit: STM 32L151C6 (another M3) + nRF8001
+
+% THOUGHT:
+%
+% We make an indirect argument here by designing and OS for ARM Cortex-M.
+% Namely that we are leaving other archiectures (pic, msp, avr) behind. There
+% is precedent for this, x86 won as a general purpose archiecture, a key step
+% towards moving forward in the embedded space is picking an archiecturural
+% winner, committing to it, and moving forward. We are doing this implicitly,
+% perhaps we should consider adding some text and making it an explicit choice
+% somewhere.
+
+We introduce \name, a next-generation operating system for embedded systems.
+Modern microcontrollers are both feature rich, with 32-bit processors and
+diverse peripherals, and feature poor, with limited memory, energy-hungry
+storage and communication, and restricted hardware support (MPUs instead of
+MMUs, if at all).
+\name targets the Cortex-M series of microprocessors.  \name leverages as many
+or as few hardware primitives are available and provides isolation and
+protection between applications and the kernel using three mechanisms at
+different levels:
 
 \begin{enumerate}
-  \item \emph{Language level protection} Tock is written in Rust, a type-safe,
-  compiled, low-level language. Tock's enforces isolation between it's
+  \item \emph{Language level protection} \name is written in Rust, a type-safe,
+  compiled, low-level language. \name enforces isolation between it's
   internal components (e.g. core device drivers) using language-level
   protection~\endnote{Yeah, I know, this is really vague right now}.
   
-  \item \emph{Software-managed memory protection} Modern ARM Cortex-M
+  \item \emph{Software-managed memory protection} Many ARM Cortex-M
   processors provide a hardware protection mechanism called Memory Protection
   Unit (MPU).  An MPU allows the kernel to set access permissions on a fixed
   number of memory regions which are enforced on application code. Unlike the
-  Memory Manage Units (MMUs) in application processors, MPUs do not provide
+  Memory Management Units (MMUs) in application processors, MPUs do not provide
   virtual addressing, however, like MMUs illegal accesses to memory regions
   (e.g. writing to read-only memory) are caught and result in a fault to the
-  kernel. Tock uses the MPU to protect kernel and driver memory from untrusted
+  kernel. \name uses the MPU to protect kernel and driver memory from untrusted
   application code and different applications from one another, while
   providing applications direct access to hardware registers, such as the
   GPIO.
@@ -42,7 +78,7 @@ applications and the kernel using three mechanisms at different levels:
   involve multiple microprocessors in practice. For example, both the CC2540
   and the NRF51822 Bluetooth modules are, in fact, full blown microprocessors,
   but many products include them in addition to another
-  microprocessor~\endnote{Well, at least Coin does that}. Tock leverage
+  microprocessor~\endnote{Well, at least Coin does that}. \name leverage
   multiprocessor environments to enforce another layer of isolation between
   applications and the kernel, by running different application components on
   different cores depending on their needs to access specific hardware, as
