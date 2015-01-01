@@ -51,10 +51,14 @@ that incorporate arbitrary new devices in many configurations.
 
 \subsection{Language Level Protection}
 
-\name is written in Rust, a type-safe, compiled, low-level language. Tock's
-enforces isolation between it's internal components (e.g. core device drivers)
-using language-level protection~\endnote{Yeah, I know, this is really vague
-right now}.
+\name is written in Rust: a type-safe, thread-safe, compiled, low-level systems
+language. Using a language with strong safety protections has enabled \name to
+formalize the separation between core kernel code and contributed device
+drivers, which are traditionally where most bugs are found but are included in
+the kernel for performance and practical reasons. While recent server operating
+systems utilize hardware I/O virtualization~\cite{arrakis:osdi2014, ix:osdi2014}
+to run device drivers outside the kernel, such hardware mechanisms are unlikely
+to be available in microcontrollers in the foreseable future.
 
 \subsection{Memory Protection}
 
