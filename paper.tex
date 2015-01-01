@@ -22,7 +22,21 @@
 % This version uses the latex2e styles, not the very ancient 2.09 stuff.
 \documentclass[letterpaper,twocolumn,10pt]{article}
 \usepackage{usenix,epsfig,endnotes,xspace}
+\usepackage[protrusion=true,expansion=true,kerning]{microtype} % Prettier text
+%\usepackage[subrefformat=parens,labelformat=simple]{subcaption}   % Replaces both subfig and subfigure
+\usepackage{textcomp}     % Provides \textmu for upright mu's
+
 \newcommand{\name}{Tock\xspace}
+
+% Some macros that a broadly useful:
+\newcommand{\uW}{{\textmu}W\xspace}
+\newcommand{\uA}{{\textmu}A\xspace}
+\newcommand{\um}{{\textmu}m\xspace}
+\newcommand{\us}{{\textmu}s\xspace}
+\newcommand{\uF}{{\textmu}F\xspace}
+\newcommand{\uJ}{{\textmu}J\xspace}
+\newcommand{\iic}{I$^2$C\xspace}
+\newcommand{\vdd}{V$_{\textnormal{DD}}$\xspace}
 
 \begin{document}
 
@@ -47,8 +61,9 @@
 % Comment it out when you first submit the paper for review.
 %\thispagestyle{empty}
 
-
+\begin{abstract}
 \input{abstract}
+\end{abstract}
 \input{intro}
 \input{vision}
 \input{hw-considerations}
