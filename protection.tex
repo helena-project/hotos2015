@@ -1,0 +1,69 @@
+\section{Protection \emph{is} a New Primitive}
+
+% pp 33--34, ch 1, sec 4:
+In Tanenbaum's \emph{Modern Operating Systems} he asserts, ``The main property
+which distinguishes embedded systems from handhelds is the certainty that no
+untrusted software will ever run on it''~\cite{tanenbaum}. In this paper we
+argue that this is no longer the case. As a class of device, embedded systems
+are evolving beyond the single-application case, and as a consequence, they
+require their operating system to provide process isolation, enforced resource
+arbitration, and protection.
+%
+Three converging trends, modern language design, new microcontroller hardware
+primitives, and contemporary multi-MCU system design afford new opportunites
+to provide protection as a primitive that was previously unavailable to
+embedded systems.
+
+
+
+\subsection{Language Level Protection}
+
+\name is written in Rust: a type-safe, thread-safe, compiled, low-level systems
+language. Using a language with strong safety protections has enabled \name to
+formalize the separation between core kernel code and contributed device
+drivers, which are traditionally where most bugs are found but are included in
+the kernel for performance and practical reasons. While recent server operating
+systems utilize hardware I/O virtualization~\cite{arrakis:osdi2014, ix:osdi2014}
+to run device drivers outside the kernel, such hardware mechanisms are unlikely
+to be available in microcontrollers in the foreseable future.
+
+\subsection{Memory Protection}
+
+Modern ARM Cortex-M processors provide a hardware protection mechanism called
+Memory Protection Unit (MPU).  An MPU allows the kernel to set access
+permissions on a fixed number of memory regions which are enforced on
+application code. Like Memory Management Units (MMUs) found in application
+processors, MPUs trap illegal memory accesses (e.g. writing to read-only memory)
+to the kernel, however unlike the MMUs, they do not provide virtual addressing,
+so do not enable mechanisms like swap memory, shared libraries, etc. MPUs are
+typically much more fine-grained than virtual memory. For example, in the ARM
+Cortex-M series of microcontrollers, the MPU can address regions as small as 32
+bytes, whereas virtual memory typically divides memory into pages of at least
+4KB.
+
+\name uses the MPU to protect kernel and driver memory from untrusted
+application code as well as different applications from one another.
+Applications are given dedicated region of memory for stack, heap and appliction
+specific kernel buffers. When execution is yielded to an application, the MPU
+restricts access to memory outside of this region. Moreover, application
+specific kenel buffers (e.g. interrupt callback queues) are allocated in the
+application's memory region, but protected from application tampering. This is
+possible due to the fine granularity of the MPU and allows \name to eliminate
+dynamic allocation in the kernel but allow more runtime flexibility in
+applications.
+
+In contrast to traditional embedded operating systems, \name uses a system call
+ABI rather than library calls to provide an interface between applications and
+the kernel.
+
+\subsection{Multiple Processors}
+
+Modern embedded platforms often involve multiple microprocessors in practice.
+For example, both the CC2540 and the NRF51822 Bluetooth modules are, in fact,
+full blown microprocessors, but many products include them in addition to
+another microprocessor~\endnote{Well, at least Coin does that}. Tock leverage
+multiprocessor environments to enforce another layer of isolation between
+applications and the kernel, by running different application components on
+different cores depending on their needs to access specific hardware, as well as
+power and performance constraints.
+
