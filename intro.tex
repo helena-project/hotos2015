@@ -88,6 +88,24 @@ called \name. We are designing \name specifically for embedded products that
 will allow end-users to install third-party applications during deployment and
 that incorporate arbitrary new devices in many configurations.
 
+\section{Protection \emph{is} a New Primitive}
+
+% pp 33--34, ch 1, sec 4:
+In Tanenbaum's \emph{Modern Operating Systems} he asserts, ``The main property
+which distinguishes embedded systems from handhelds is the certainty that no
+untrusted software will ever run on it''~\cite{tanenbaum}. In this paper we
+argue that this is no longer the case. As a class of device, embedded systems
+are evolving beyond the single-application case, and as a consequence, they
+require their operating system to provide process isolation, enforced resource
+arbitration, and protection.
+%
+Three converging trends, modern language design, new microcontroller hardware
+primitives, and contemporary multi-MCU system design afford new opportunites
+to provide protection as a primitive that was previously unavailable to
+embedded systems.
+
+
+
 \subsection{Language Level Protection}
 
 \name is written in Rust: a type-safe, thread-safe, compiled, low-level systems
