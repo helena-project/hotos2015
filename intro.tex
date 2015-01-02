@@ -14,20 +14,36 @@ voice communication acting as simply another application on the device.
 
 Today, we see the emergence of ``intelligent'' things at varying steps along
 this progression: Smart watches with a clock application and a limited set of
-other applets, smart light bulbs that support single functions---on and off,
+applets, smart light bulbs that support single functions---on and off,
 brighter and dimmer---, smarter light bulbs that pulse with the ambient music.
 %
 Traditionally, these embedded devices have been single-purpose
-single-application devices. As a result, embedded ``operating systems'' have
-generated monolithic program images, running a single application and
+single-application devices. As a result, embedded ``operating systems''
+generate monolithic program images, running a single application and
 providing unfettered access to underlying hardware.
+
+The key abstraction lacking in traditional embedded operating systems, but
+essential to enable the next generation of embedded devices is protection. In
+operating systems like TinyOS and Contiki, applications are linked into the
+operating system at compile time and all parts of the code have access to the
+same address- and name-space. FreeRTOS has a notion of \emph{tasks} which run
+independently of the operating system, but this separation is not enforced;
+applications have complete access to operating system memory regions and
+hardware resources.
+
+We introduce \name, a next-generation operating system for embedded systems.
+Modern microcontrollers are both feature rich, with 32-bit processors and
+diverse peripherals, and feature poor, with limited memory, energy-hungry
+storage and communication, and restricted hardware support (MPUs instead of
+MMUs, if at all).
 %
-It is time for embedded operating systems to evolve from their
-application-specific nature to a general-purpose operating system,
-%We argue that the time has come for a true embedded operating system,
-one that enables and encourages multiple applications, provides both hardware
-abstractions and low-level hardware access, and offers critical services for
-the applications of the Internet of Things.
+It is time for the embedded operating system to evolve from single-application-centric
+design---a glorified hardware abstraction layer---% glorified is too colloquial
+% "a set of advanced libraries"? sells them too short... fixme
+to a real operating system, % don't like "real" either; general-purpose, proper?
+one that enables and encourages multiple concurrent, isolated applications,
+provides both hardware abstractions and low-level hardware access, and offers
+critical services for the applications of the Internet of Things.
 %Today's fitness tracker can easily double as a medication reminder, if only
 %there was a means to install and run another application.
 
@@ -46,26 +62,10 @@ the applications of the Internet of Things.
 % perhaps we should consider adding some text and making it an explicit choice
 % somewhere.
 
-We introduce \name, a next-generation operating system for embedded systems.
-Modern microcontrollers are both feature rich, with 32-bit processors and
-diverse peripherals, and feature poor, with limited memory, energy-hungry
-storage and communication, and restricted hardware support (MPUs instead of
-MMUs, if at all).
-%\name targets the Cortex-M series of microprocessors.  \name leverages as many
-%or as few hardware primitives are available and provides isolation and
-%protection between applications and the kernel using three mechanisms at
-%different levels:
-The key abstraction lacking in traditional embedded operating systems, but
-essential to enable the next generation of embedded devices is protection. In
-operating systems like TinyOS and Contiki, applications are linked into the
-operating system at compile time and all parts of the code have access to the
-same address- and name-space. FreeRTOS has a notion of \emph{tasks} which run
-independently of the operating system, but this separation is not enforced --
-applications have complete access to operating system memory regions and
-unfettered hardware access.
-
-We argue that embedded operating systems should take advantage of three
-protection mechanisms recently available to embedded systems builders:
+While protection is not a new primitive in operating system design, it is a
+new primitive for embedded operating system design. In the design of \name, we
+take advantage of three protection mechanisms recently available to embedded
+systems builders:
 
 \begin{enumerate}
   \item \emph{Language level protection} including type safety, memory safety
