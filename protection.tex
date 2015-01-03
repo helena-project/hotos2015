@@ -52,18 +52,13 @@ possible due to the fine granularity of the MPU and allows \name to eliminate
 dynamic allocation in the kernel but allow more runtime flexibility in
 applications.
 
-In contrast to traditional embedded operating systems, \name uses a system call
-ABI rather than library calls to provide an interface between applications and
-the kernel.
-
 \subsection{Multiple Processors}
 
 Modern embedded platforms often involve multiple microprocessors in practice.
-For example, both the CC2540 and the NRF51822 Bluetooth modules are, in fact,
-full blown microprocessors, but many products include them in addition to
-another microprocessor~\endnote{Well, at least Coin does that}. Tock leverage
-multiprocessor environments to enforce another layer of isolation between
-applications and the kernel, by running different application components on
-different cores depending on their needs to access specific hardware, as well as
-power and performance constraints.
+For example, the Nest Protect includes a main Cortex-M4 application controller,
+a secondary Cortex-M0+ peripheral processor and the EM357 802.15.4 radio SoC,
+which has an additional onboard Cortex-M3~\cite{nestprotect-teardown}. \name
+leverages multiprocessor environments to protect time sensitve applications from
+interference by, e.g compute heavy applications, as well as to protect against
+side-channel attacks on applications handling sensitive data.
 
