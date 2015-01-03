@@ -9,23 +9,48 @@ are evolving beyond the single-application case, and as a consequence, they
 require their operating system to provide process isolation, enforced resource
 arbitration, and protection.
 %
-Three converging trends, modern language design, new microcontroller hardware
-primitives, and contemporary multi-MCU system design afford new opportunites
-to provide protection as a primitive that was previously unavailable to
-embedded systems.
-
-
+Three trends, modern language design, new microcontroller hardware primitives,
+and contemporary multi-MCU system design afford new opportunites to provide
+protection as a primitive that was previously unavailable to embedded systems.
+We are exploring these protection mechanisms in a new embedded operating system
+called \name. We are designing \name specifically for embedded products that
+will allow end-users to install third-party applications during deployment and
+that incorporate arbitrary new devices in many configurations.
 
 \subsection{Language Level Protection}
 
+Embedded operating systems, like their desktop and server counterparts, have
+traditionally been developed using C, or C-derived languages. These languages
+lack many protection features of more modern systems languages---memory and
+thread safety, a strongly enforced module system---and are inapproriate for
+sandboxing untrusted linked code. This has meant that, while device drivers are
+often contributed by external developers, likely receive less attention than the
+core kernel code and are most likely to contain security vulnerabilities, they
+run with the same privileges as core kernel modules, like the scheduler. This
+problem is particularly salient in embedded systems frameworks like Arduino,
+where platforms are often constructed by cobbling various device ``shields''
+together and downloading or copy-pasting device driver code. While recent server
+operating systems utilize hardware I/O virtualization~\cite{arrakis:osdi2014,
+ix:osdi2014} to run device drivers outside the kernel, such hardware mechanisms
+are unlikely to be available in microcontrollers in the foreseeable future.
+
 \name is written in Rust: a type-safe, thread-safe, compiled, low-level systems
-language. Using a language with strong safety protections has enabled \name to
+language. Using a language with strong safety protections enables \name to
 enforce the separation between core kernel code and contributed device
 drivers, which are traditionally where most bugs are found but are included in
-the kernel for performance and practical reasons. While recent server operating
-systems utilize hardware I/O virtualization~\cite{arrakis:osdi2014, ix:osdi2014}
-to run device drivers outside the kernel, such hardware mechanisms are unlikely
-to be available in microcontrollers in the foreseeable future.
+the kernel for performance and practical reasons. Moreover, resource sharing
+between drivers (e.g. of communication busses) must be done {\bf explicitly}, and
+by default, the type system ensures concurrency bugs are limited to a single
+device driver (i.e. a device driver can send the wrong command to a flash
+storage device but cannot send a command to a radio module sharing the same SPI
+bus). In particular, \name uses XX features of Rust to sandbox device drivers.
+
+\begin{enumerate}
+  \item Devices drivers are compiled with a safe subset of the Rust language
+  (enforced by a compiler flag), preventing device drivers from maliciously, or
+  inadvertedly subverting the type or module system.
+
+\end{enumerate} 
 
 \subsection{Memory Protection}
 
@@ -64,7 +89,10 @@ Protect includes a main Cortex-M4 application controller, a secondary Cortex-M0+
 peripheral processor and the EM357 802.15.4 radio SoC, which has an additional
 onboard Cortex-M3~\cite{nestprotect-teardown}.
 
-\name leverages multiprocessor environments to protect time sensitve
+\name leverages multiprocessor environments to provide protection where
+language-level and memory isolation are insufficient. In a multi-application
+environment, time-sensitive applications (e.g. that must process requests within
+a single radio scheduling quantum) must 
 applications from interference by, e.g compute heavy applications, as well as to
 protect against side-channel attacks on applications handling sensitive data.
 
