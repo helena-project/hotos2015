@@ -20,12 +20,12 @@ embedded systems.
 
 \name is written in Rust: a type-safe, thread-safe, compiled, low-level systems
 language. Using a language with strong safety protections has enabled \name to
-formalize the separation between core kernel code and contributed device
+enforce the separation between core kernel code and contributed device
 drivers, which are traditionally where most bugs are found but are included in
 the kernel for performance and practical reasons. While recent server operating
 systems utilize hardware I/O virtualization~\cite{arrakis:osdi2014, ix:osdi2014}
 to run device drivers outside the kernel, such hardware mechanisms are unlikely
-to be available in microcontrollers in the foreseable future.
+to be available in microcontrollers in the foreseeable future.
 
 \subsection{Memory Protection}
 
@@ -54,11 +54,17 @@ applications.
 
 \subsection{Multiple Processors}
 
-Modern embedded platforms often involve multiple microprocessors in practice.
-For example, the Nest Protect includes a main Cortex-M4 application controller,
-a secondary Cortex-M0+ peripheral processor and the EM357 802.15.4 radio SoC,
-which has an additional onboard Cortex-M3~\cite{nestprotect-teardown}. \name
-leverages multiprocessor environments to protect time sensitve applications from
-interference by, e.g compute heavy applications, as well as to protect against
-side-channel attacks on applications handling sensitive data.
+Modern embedded platforms increasingly include multiple microprocessors. Often,
+peripheral devices like radio modules are actually a full blown microprocessor
+that to allow the application controller to offload low-level radio
+functionality and reduce overall power~\cite{nrf51822,cc2540}. In other cases, a
+similar microprocessor with a different energy profile to provide applications
+with more control over the energy-performance tradeoff.  For example, the Nest
+Protect includes a main Cortex-M4 application controller, a secondary Cortex-M0+
+peripheral processor and the EM357 802.15.4 radio SoC, which has an additional
+onboard Cortex-M3~\cite{nestprotect-teardown}.
+
+\name leverages multiprocessor environments to protect time sensitve
+applications from interference by, e.g compute heavy applications, as well as to
+protect against side-channel attacks on applications handling sensitive data.
 
