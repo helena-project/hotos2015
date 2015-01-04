@@ -1,26 +1,45 @@
 \section{Introduction}
 
-% This may be dipping a little too far back into history and waxing a little
-% too poetic as a consequence
-In 1882, Charles Babbage designed the first automated computer, the Difference
-Engine. Fifteen years later, he evolved the design to create a general-purpose
-machine, the Analytical Engine. Since the birth of computing, new
-computational platforms have followed this trend, beginning as specialized
-devices and evolving to general purpose platforms.
-Most recently, the mobile phone evolved from a single-purpose voice
-communication platform to add text communication, to run small Java applets,
-and eventually to the full-fledged computing devices they are today, with
-voice communication acting as simply another application on the device.
+As networking became an integral part of computing through the Internet and
+world wide web, system security grew in importance from a niche interest
+of the military into a core requirement for every operating system and 
+software application. Twenty years ago, we had to be careful about what
+floppy disks we inserted into our computers. Today, we have firewalls,
+NATs, automatic virus scanners, no-execute bits, virtual machines, 
+increasing use of secure HTTP, and and a growing infrastructure for 
+authenticating downloaded data and code.
 
-Today, we see the emergence of ``intelligent'' things at varying steps along
-this progression: Smart watches with a clock application and a limited set of
-applets, smart light bulbs that support single functions---on and off,
-brighter and dimmer---, smarter light bulbs that pulse with the ambient music.
-%
-Traditionally, these embedded devices have been single-purpose
-single-application devices. As a result, embedded ``operating systems''
-generate monolithic program images, running a single application and
-providing unfettered access to underlying hardware.
+Today, we see the emergence of ``intelligent'' things that integrate
+computing with physical devices. Smart watches such as the Pebble
+provide a clock application and a limited set of applets, smart light
+bulbs such as the Phillips Hue support single functions---on and off,
+brighter and dimmer---, while smarter light bulbs such as the PLAYBULB
+pulse with the music they play from their integrated speaker. 
+As embedded systems grow from niche systems into a more general purpose
+computing infrastructure, there will be a need to dynamically load 
+applications and share the infrastructure across multiple applications. 
+For example, the Pebble watch supports applications that can load 
+executable code onto a mobile phone, using the phone's services and
+network to pushing data to display on the watch. 
+
+Historically,
+embedded systems have been single-purpose, single-application devices.
+As a result, embedded ``operating systems'' have no security mechanisms.
+Microcontroller families such as the MSP430 and Atmega do not provide
+any hardware mechanisms to support security. With only a few kilobytes of RAM,
+they lack virtual memory, memory protection, and lack caches. 
+An application developer compiles a monolithic program image that runs 
+a single application which has unfettered access to underlying hardware. 
+
+But in the past few years, a new generation of embedded processors
+has emerged. These processors, based on the ARM Cortex M architecture,
+sit in a middle ground between full-fledged CPUs and microcontrollers.
+They are 32 bits, and have tens to hundreds of kilobytes of RAM. They have
+memory protection, but no virtual memory. They provide many peripherals
+and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
+have sub-$\muA$ sleep currents. The Nordic Semiconductor nRF51822, for example,
+is an integrated system-on-a-chip (SoC) with a Bluetooth Low Energy 
+transciever and a Cortex M0 processor costs a little more than 1\$.
 
 The key abstraction lacking in traditional embedded operating systems, but
 essential to enable the next generation of embedded devices is protection. In
