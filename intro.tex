@@ -1,28 +1,14 @@
 \section{Introduction}
 
 As networking became an integral part of computing through the Internet and
-World Wide Web, system security grew in importance from a niche interest
+world wide web, system security grew in importance from a niche interest
 of the military into a core requirement for every operating system and 
 software application. Twenty years ago, we had to be careful about what
 floppy disks we inserted into our computers. Today, we have firewalls,
 NATs, automatic virus scanners, no-execute bits, virtual machines, 
-increasing use of secure HTTP, and a growing infrastructure for 
+increasing use of secure HTTP, and and a growing infrastructure for 
 authenticating downloaded data and code.
 
-<<<<<<< HEAD
-Today, we see the emergence of ``intelligent'' things that integrate
-computing with physical devices. Smart watches such as the Pebble
-provide a clock application and a limited set of applets, smart light
-bulbs such as the Phillips Hue support single functions---on and off,
-brighter and dimmer---, while smarter light bulbs such as the PLAYBULB
-pulse with the music they play from their integrated speaker. 
-As embedded systems grow from niche systems into a more general purpose
-computing infrastructure, there will be a need to dynamically load 
-applications and share the infrastructure across multiple applications. 
-For example, the Pebble watch supports applications that can load 
-executable code onto a mobile phone, use the phone's services and
-network to display data on the watch. 
-=======
 Today, we see the emergence of ``intelligent'' things that integrate computing
 with physical devices. Smart watches such as the Pebble provide a clock
 application and a limited set of applets, smart light bulbs such as the
@@ -34,15 +20,15 @@ dynamically load applications and share the infrastructure across multiple
 applications.  For example, the Pebble watch supports applications that can
 load executable code and use the builtin sensors, display and communicate with
 apps on a connected mobile phone.
->>>>>>> 5ec0a962a1f5e84758caebd71309aa024982087d
 
-Historically, embedded systems have been single-purpose, single-application
-devices. Together with the hardware limitations it resulted in embedded
-``operating systems'' having no security mechanisms. Microcontroller families
-such as the MSP430 and Atmega do not provide any hardware mechanisms to support
-security. With only a few kilobytes of RAM, they lack virtual memory, memory
-protection, and lack caches. An application developer compiles a monolithic
-program image that runs a single application which has unfettered access to underlying hardware.
+Historically,
+embedded systems have been single-purpose, single-application devices.
+As a result, embedded ``operating systems'' have no security mechanisms.
+Microcontroller families such as the MSP430 and Atmega do not provide
+any hardware mechanisms to support security. With only a few kilobytes of RAM,
+they lack virtual memory, memory protection, and lack caches. 
+An application developer compiles a monolithic program image that runs 
+a single application which has unfettered access to underlying hardware. 
 
 But in the past few years, a new generation of embedded processors
 has emerged. These processors, based on the ARM Cortex M architecture,
@@ -52,14 +38,8 @@ memory protection, but no virtual memory. They provide many peripherals
 and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
 have sub-\uA sleep currents. The Nordic Semiconductor nRF51822, for example,
 is an integrated system-on-a-chip (SoC) with a Bluetooth Low Energy 
-<<<<<<< HEAD
-transceiver and a Cortex M0 processor costs a little more than 1\$.
-=======
 transciever and a Cortex M0 processor costs a little more than \$1.
->>>>>>> 5ec0a962a1f5e84758caebd71309aa024982087d
 
-%%it is not true for Contiki. You can compile your application, send the code
-% which will be open by os. Hence it is NOT linked into OS at compile time
 The key abstraction lacking in traditional embedded operating systems, but
 essential to enable the next generation of embedded devices is protection. In
 operating systems like TinyOS and Contiki, applications are linked into the
@@ -99,10 +79,6 @@ critical services for the applications of the Internet of Things.
 % winner, committing to it, and moving forward. We are doing this implicitly,
 % perhaps we should consider adding some text and making it an explicit choice
 % somewhere.
-
-% L: I don't think that commitement to ARM benefits the clarity or the research
-% contribution of the paper. Rather describing desireble MCU functions for
-% the future of embeded devices makes stronger argument.
 
 While protection is not a new primitive in operating system design, it is a
 new primitive for embedded operating system design. In the design of \name, we
