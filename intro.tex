@@ -49,8 +49,8 @@ binary image at compile time and all parts of the code have access to the
 same address- and name-space. FreeRTOS has a notion of \emph{tasks} which run
 independently of the operating system, but this separation is not enforced;
 applications have complete access to operating system memory regions and
-hardware resources. Contiki's programing model is based on protothread
-that are invoked by core in response to an event. Protothreads are cooperatively
+hardware resources. Contiki's \cite{contiki} programing model is based on
+protothread that are invoked by core in response to an event. Protothreads are cooperatively
 schedules and must explicitly yield control back to the kernel. Contiki was
 designed more then a decade ago, hence it is designed to not support memory
 protection.
