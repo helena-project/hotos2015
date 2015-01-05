@@ -17,8 +17,8 @@ while smarter light bulbs such as the PLAYBULB pulse with the music they play
 from their integrated speaker.  As embedded systems grow from niche systems
 into a more general purpose computing infrastructure, there will be a need to
 dynamically load applications and share the infrastructure across multiple
-applications.  For example, the Pebble watch supports applications that can
-load executable code and use the builtin sensors, display and communicate with
+applications.  For example, the Pebble watch supports loading executable code
+that can use the builtin sensors and display as well as communicate with
 apps on a connected mobile phone.
 
 Historically,
@@ -38,8 +38,10 @@ memory protection, but no virtual memory. They provide many peripherals
 and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
 have sub-\uA sleep currents. The Nordic Semiconductor nRF51822, for example,
 is an integrated system-on-a-chip (SoC) with a Bluetooth Low Energy 
-transciever and a Cortex M0 processor costs a little more than \$1.
+transceiver and a Cortex M0 processor costs a little more than \$1.
 
+%%it is not true for Contiki. You can compile your application, send the code
+% which will be open by os. Hence it is NOT linked into OS at compile time
 The key abstraction lacking in traditional embedded operating systems, but
 essential to enable the next generation of embedded devices is protection. In
 operating systems like TinyOS and Contiki, applications are linked into the
@@ -48,6 +50,11 @@ same address- and name-space. FreeRTOS has a notion of \emph{tasks} which run
 independently of the operating system, but this separation is not enforced;
 applications have complete access to operating system memory regions and
 hardware resources.
+
+% L: I don't think that commitement to ARM benefits the clarity or the research
+% contribution of the paper. Rather describing desireble MCU functions for
+% the future of embeded devices makes stronger argument.
+
 
 We introduce \name, a next-generation operating system for embedded systems.
 Modern microcontrollers are both feature rich, with 32-bit processors and
