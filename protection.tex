@@ -91,8 +91,9 @@ onboard Cortex-M3~\cite{nestprotect-teardown}.
 
 \name leverages multiprocessor environments to provide protection where
 language-level and memory isolation are insufficient. In a multi-application
-environment, time-sensitive applications (e.g. that must process requests within
-a single radio scheduling quantum) must 
-applications from interference by, e.g compute heavy applications, as well as to
-protect against side-channel attacks on applications handling sensitive data.
+environment, time-sensitive applications (e.g. that must process requests
+within a single radio scheduling quantum) are protected from interference by,
+e.g compute heavy applications. In addition, \name schedules applications on
+different processors to applications handling sensitive data from side-channel
+attacks by other applications.
 
