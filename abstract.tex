@@ -1,14 +1,18 @@
 Microcontroller operating systems and frameworks typically assume that a single,
-monolothic application will run on an embedded system. In fact, hitorically,
+monolithic application will run on an embedded system. In fact, historically,
 power consumption, memory and code sizes, and lack of hardware support have
 constrained microcontroller applications to be single-function. This is no
-longer the case with modern hardware. Modern micocontrollers, like the Atmel
+longer the case with modern hardware. Modern microcontrollers, like the Atmel
 SAM4L (an ARM Cortex-M4), provides over six times more SRAM and over five times
 larger flash than the TI~MSP430 that powered the TelosB motes while maintaining
-similar power draws (90~{\uA}/MHz active and 3~\uA at sleep). At the same
-time, embedded products are increasingly becoming development platforms and
-application ecosystems for products like the Pebble watch are emerging. The
-operating systems community should leverage new hardware, advancements in
+similar power draws (90~{\uA}/MHz active and 3~\uA at sleep).
+Simultaneously embedded products are becoming a development platforms and an
+application ecosystems for products like the Pebble watch. Additionally, a set
+of modular embedded devices is emerging. Devices like SimBand, Wzzard and
+ThinkingThings have a core part to which additional modules can be attached to
+extend the functionality. These modules can be developed by the third parties
+and have own microcontroller with runtime environment.
+The operating systems community should leverage advancements in hardware,
 programming languages as well as our experience from the Web, and other
 application rich ecosystems, to build the next generation of embedded operating
 systems.
