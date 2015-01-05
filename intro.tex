@@ -44,16 +44,16 @@ transceiver and a Cortex M0 processor costs a little more than \$1.
 % which will be open by os. Hence it is NOT linked into OS at compile time
 The key abstraction lacking in traditional embedded operating systems, but
 essential to enable the next generation of embedded devices is protection. In
-operating systems like TinyOS and Contiki, applications are linked into the
-operating system at compile time and all parts of the code have access to the
+operating systems like TinyOS applications are linked into the
+binary image at compile time and all parts of the code have access to the
 same address- and name-space. FreeRTOS has a notion of \emph{tasks} which run
 independently of the operating system, but this separation is not enforced;
 applications have complete access to operating system memory regions and
-hardware resources.
-
-% L: I don't think that commitement to ARM benefits the clarity or the research
-% contribution of the paper. Rather describing desireble MCU functions for
-% the future of embeded devices makes stronger argument.
+hardware resources. Contiki's \cite{contiki} programing model is based on
+protothread that are invoked by core in response to an event. Protothreads are cooperatively
+schedules and must explicitly yield control back to the kernel. Contiki was
+designed more then a decade ago, hence it is designed to not support memory
+protection.
 
 
 We introduce \name, a next-generation operating system for embedded systems.
@@ -86,6 +86,10 @@ critical services for the applications of the Internet of Things.
 % winner, committing to it, and moving forward. We are doing this implicitly,
 % perhaps we should consider adding some text and making it an explicit choice
 % somewhere.
+
+% L: I don't think that commitement to ARM benefits the clarity or the research
+% contribution of the paper. Rather describing desireble MCU functions for
+% the future of embeded devices makes stronger argument.
 
 While protection is not a new primitive in operating system design, it is a
 new primitive for embedded operating system design. In the design of \name, we
