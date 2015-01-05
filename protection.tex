@@ -43,12 +43,20 @@ between drivers (e.g. of communication busses) must be done {\bf explicitly}, an
 by default, the type system ensures concurrency bugs are limited to a single
 device driver (i.e. a device driver can send the wrong command to a flash
 storage device but cannot send a command to a radio module sharing the same SPI
-bus). In particular, \name uses XX features of Rust to sandbox device drivers.
+bus). In particular, \name uses two features of Rust to sandbox device drivers.
 
 \begin{enumerate}
   \item Devices drivers are compiled with a safe subset of the Rust language
   (enforced by a compiler flag), preventing device drivers from maliciously, or
   inadvertedly subverting the type or module system.
+
+  \item Underlying hardware resources such as SPI controllers, timers, etc, are
+    modeled as typed values in Rust. \name uses Rust's move semantics to ensure
+    no two device drivers have a reference to the same underlying hardware
+    resource. Virtualized resources (e.g. a SPI master controlling multiple SPI
+    slaves) must be modeled explicitly, with a separate value for each virtual
+    resource. This prevents a class of bugs that could result from concurrent
+    access to hardware resources by different device drivers.
 
 \end{enumerate} 
 
@@ -91,8 +99,9 @@ onboard Cortex-M3~\cite{nestprotect-teardown}.
 
 \name leverages multiprocessor environments to provide protection where
 language-level and memory isolation are insufficient. In a multi-application
-environment, time-sensitive applications (e.g. that must process requests within
-a single radio scheduling quantum) must 
-applications from interference by, e.g compute heavy applications, as well as to
-protect against side-channel attacks on applications handling sensitive data.
+environment, time-sensitive applications (e.g. that must process requests
+within a single radio scheduling quantum) are protected from interference by,
+e.g compute heavy applications. In addition, \name schedules applications on
+different processors to applications handling sensitive data from side-channel
+attacks by other applications.
 
