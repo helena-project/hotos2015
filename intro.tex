@@ -9,18 +9,17 @@ NATs, automatic virus scanners, no-execute bits, virtual machines,
 increasing use of secure HTTP, and and a growing infrastructure for 
 authenticating downloaded data and code.
 
-Today, we see the emergence of ``intelligent'' things that integrate
-computing with physical devices. Smart watches such as the Pebble
-provide a clock application and a limited set of applets, smart light
-bulbs such as the Phillips Hue support single functions---on and off,
-brighter and dimmer---, while smarter light bulbs such as the PLAYBULB
-pulse with the music they play from their integrated speaker. 
-As embedded systems grow from niche systems into a more general purpose
-computing infrastructure, there will be a need to dynamically load 
-applications and share the infrastructure across multiple applications. 
-For example, the Pebble watch supports applications that can load 
-executable code onto a mobile phone, using the phone's services and
-network to pushing data to display on the watch. 
+Today, we see the emergence of ``intelligent'' things that integrate computing
+with physical devices. Smart watches such as the Pebble provide a clock
+application and a limited set of applets, smart light bulbs such as the
+Phillips Hue support single functions---on and off, brighter and dimmer---,
+while smarter light bulbs such as the PLAYBULB pulse with the music they play
+from their integrated speaker.  As embedded systems grow from niche systems
+into a more general purpose computing infrastructure, there will be a need to
+dynamically load applications and share the infrastructure across multiple
+applications.  For example, the Pebble watch supports applications that can
+load executable code and use the builtin sensors, display and communicate with
+apps on a connected mobile phone.
 
 Historically,
 embedded systems have been single-purpose, single-application devices.
@@ -39,7 +38,7 @@ memory protection, but no virtual memory. They provide many peripherals
 and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
 have sub-\uA sleep currents. The Nordic Semiconductor nRF51822, for example,
 is an integrated system-on-a-chip (SoC) with a Bluetooth Low Energy 
-transciever and a Cortex M0 processor costs a little more than 1\$.
+transciever and a Cortex M0 processor costs a little more than \$1.
 
 The key abstraction lacking in traditional embedded operating systems, but
 essential to enable the next generation of embedded devices is protection. In
