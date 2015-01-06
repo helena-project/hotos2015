@@ -1,0 +1,24 @@
+\subsection{Memory Protection}
+
+Modern ARM Cortex-M processors provide a hardware protection mechanism called
+Memory Protection Unit (MPU).  An MPU allows the kernel to set access
+permissions on a fixed number of memory regions which are enforced on
+application code. Like Memory Management Units (MMUs) found in application
+processors, MPUs trap illegal memory accesses (e.g. writing to read-only
+memory) to the kernel, however unlike the MMUs, they do not provide virtual
+addressing, so do not enable mechanisms like swap memory, shared libraries,
+etc. MPUs are typically much more fine-grained than virtual memory. For
+example, in the ARM Cortex-M series of microcontrollers, the MPU can address a
+mix of region sizes as small as 32 bytes and as large as 4GB, whereas virtual
+memory typically divides memory into fixed sized pages of at least 4KB.
+
+\name uses the MPU to protect kernel and driver memory from untrusted
+application code as well as different applications from one another.
+Applications are given dedicated region of memory for stack, heap and appliction
+specific kernel buffers. When execution is yielded to an application, the MPU
+restricts access to memory outside of this region. Moreover, application
+specific kenel buffers (e.g. interrupt callback queues) are allocated in the
+application's memory region, but protected from application tampering. This is
+possible due to the fine granularity of the MPU and allows \name to eliminate
+dynamic allocation in the kernel but allow more runtime flexibility in
+applications.

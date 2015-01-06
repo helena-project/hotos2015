@@ -1,0 +1,20 @@
+\subsection{Multiple Processors}
+
+Modern embedded platforms increasingly include multiple microprocessors. Often,
+peripheral devices like radio modules are actually a full blown microprocessor
+that to allow the application controller to offload low-level radio
+functionality and reduce overall power~\cite{nrf51822,cc2540}. In other cases, a
+similar microprocessor with a different energy profile to provide applications
+with more control over the energy-performance tradeoff.  For example, the Nest
+Protect includes a main Cortex-M4 application controller, a secondary Cortex-M0+
+peripheral processor and the EM357 802.15.4 radio SoC, which has an additional
+onboard Cortex-M3~\cite{nestprotect-teardown}.
+
+\name leverages multiprocessor environments to provide protection where
+language-level and memory isolation are insufficient. In a multi-application
+environment, time-sensitive applications (e.g. that must process requests
+within a single radio scheduling quantum) are protected from interference by,
+e.g compute heavy applications. In addition, \name schedules applications on
+different processors to applications handling sensitive data from side-channel
+attacks by other applications.
+

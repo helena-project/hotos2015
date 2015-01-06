@@ -17,91 +17,9 @@ called \name. We are designing \name specifically for embedded products that
 will allow end-users to install third-party applications during deployment and
 that incorporate arbitrary new devices in many configurations.
 
-\subsection{Language Level Protection}
+\input{protection-memory}
 
-Embedded operating systems, like their desktop and server counterparts, have
-traditionally been developed using C, or C-derived languages. These languages
-lack many protection features of more modern systems languages---memory and
-thread safety, a strongly enforced module system---and are inapproriate for
-sandboxing untrusted linked code. This has meant that, while device drivers are
-often contributed by external developers, likely receive less attention than the
-core kernel code and are most likely to contain security vulnerabilities, they
-run with the same privileges as core kernel modules, like the scheduler. This
-problem is particularly salient in embedded systems frameworks like Arduino,
-where platforms are often constructed by cobbling various device ``shields''
-together and downloading or copy-pasting device driver code. While recent server
-operating systems utilize hardware I/O virtualization~\cite{arrakis:osdi2014,
-ix:osdi2014} to run device drivers outside the kernel, such hardware mechanisms
-are unlikely to be available in microcontrollers in the foreseeable future.
+\input{protection-multicore}
 
-\name is written in Rust: a type-safe, thread-safe, compiled, low-level systems
-language. Using a language with strong safety protections enables \name to
-enforce the separation between core kernel code and contributed device
-drivers, which are traditionally where most bugs are found but are included in
-the kernel for performance and practical reasons. Moreover, resource sharing
-between drivers (e.g. of communication busses) must be done {\bf explicitly}, and
-by default, the type system ensures concurrency bugs are limited to a single
-device driver (i.e. a device driver can send the wrong command to a flash
-storage device but cannot send a command to a radio module sharing the same SPI
-bus). In particular, \name uses two features of Rust to sandbox device drivers.
-
-\begin{enumerate}
-  \item Devices drivers are compiled with a safe subset of the Rust language
-  (enforced by a compiler flag), preventing device drivers from maliciously, or
-  inadvertedly subverting the type or module system.
-
-  \item Underlying hardware resources such as SPI controllers, timers, etc, are
-    modeled as typed values in Rust. \name uses Rust's move semantics to ensure
-    no two device drivers have a reference to the same underlying hardware
-    resource. Virtualized resources (e.g. a SPI master controlling multiple SPI
-    slaves) must be modeled explicitly, with a separate value for each virtual
-    resource. This prevents a class of bugs that could result from concurrent
-    access to hardware resources by different device drivers.
-
-\end{enumerate} 
-
-\subsection{Memory Protection}
-
-Modern ARM Cortex-M processors provide a hardware protection mechanism called
-Memory Protection Unit (MPU).  An MPU allows the kernel to set access
-permissions on a fixed number of memory regions which are enforced on
-application code. Like Memory Management Units (MMUs) found in application
-processors, MPUs trap illegal memory accesses (e.g. writing to read-only
-memory) to the kernel, however unlike the MMUs, they do not provide virtual
-addressing, so do not enable mechanisms like swap memory, shared libraries,
-etc. MPUs are typically much more fine-grained than virtual memory. For
-example, in the ARM Cortex-M series of microcontrollers, the MPU can address a
-mix of region sizes as small as 32 bytes and as large as 4GB, whereas virtual
-memory typically divides memory into fixed sized pages of at least 4KB.
-
-\name uses the MPU to protect kernel and driver memory from untrusted
-application code as well as different applications from one another.
-Applications are given dedicated region of memory for stack, heap and appliction
-specific kernel buffers. When execution is yielded to an application, the MPU
-restricts access to memory outside of this region. Moreover, application
-specific kenel buffers (e.g. interrupt callback queues) are allocated in the
-application's memory region, but protected from application tampering. This is
-possible due to the fine granularity of the MPU and allows \name to eliminate
-dynamic allocation in the kernel but allow more runtime flexibility in
-applications.
-
-\subsection{Multiple Processors}
-
-Modern embedded platforms increasingly include multiple microprocessors. Often,
-peripheral devices like radio modules are actually a full blown microprocessor
-that to allow the application controller to offload low-level radio
-functionality and reduce overall power~\cite{nrf51822,cc2540}. In other cases, a
-similar microprocessor with a different energy profile to provide applications
-with more control over the energy-performance tradeoff.  For example, the Nest
-Protect includes a main Cortex-M4 application controller, a secondary Cortex-M0+
-peripheral processor and the EM357 802.15.4 radio SoC, which has an additional
-onboard Cortex-M3~\cite{nestprotect-teardown}.
-
-\name leverages multiprocessor environments to provide protection where
-language-level and memory isolation are insufficient. In a multi-application
-environment, time-sensitive applications (e.g. that must process requests
-within a single radio scheduling quantum) are protected from interference by,
-e.g compute heavy applications. In addition, \name schedules applications on
-different processors to applications handling sensitive data from side-channel
-attacks by other applications.
+\input{protection-pl}
 
