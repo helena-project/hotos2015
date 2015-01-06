@@ -1,0 +1,44 @@
+\section{Memory Model}
+
+Unlike desktop operating systems, microcontrollers with memory protection have
+no support for virtual addressing. As a result, any executing thread can attempt
+load and store operations to any address in memory, including sensitive kernel
+buffers or hardware memory registers. The memory protection unit (MPU) allows an
+operating system to protect sensitive memory regions from malicious or buggy
+applications by marking memory regions with read, write and execute permission.
+These permission take effect when the processor is in unprivileged mode.
+However, using access control instead of virtual memory for protection requires
+well behaved applications to know exactly where memory regions reside and which
+regions it has access to.
+
+\subsection{The Cortex-M MPU}
+
+The Cortex-M MPU allows the kernel to defined eight memory regions. Each memory
+region may be sized between 32 bytes and 4GB, in 32 byte increments and has
+protection bits for read, write and execute. Regions may overlap, in which case
+the memory region with the highest number ``wins''. In addition, regions of at
+least 256 bytes can be divided into eight equal sized subregions, which can
+either be turned on---in which case they inheret the parent region's protection
+bits---or turned off---in which case the parent's protection bits do not apply.
+As a result, the operating system can control access to up to 64 concurrently
+active regions. Finally, memory regions and protection bits can be changed
+during exection, for example while context switching between applications.
+
+\subsection{Memory Regions in \name}
+
+The operating system has roles with respect to application memory. First it
+manages where applications are allowed to allocate memory. Second it manages
+which memories the application can access. This includes most of the application
+allocated memory, but may also include hardware memory registers that are
+exposed directly to applications.
+
+{\bf Allocation Regions.} 
+In \name, the kernel allocates three separate memory regions for each
+application, one for each of the stack, heap and data sections. The stack and
+data sections are completely accessible to the application, and only the
+application can allocate memory there. On the other hand, the heap is shared
+between the application and the kernel, which \emph{borrows} heap memory from
+the application for things like buffers and queues which the kernel needs
+to satisfy application demands.
+
+{\bf Access Rules.}
