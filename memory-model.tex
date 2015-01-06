@@ -42,3 +42,27 @@ the application for things like buffers and queues which the kernel needs
 to satisfy application demands.
 
 {\bf Access Rules.}
+Naively, memory allocation rules would define memory access rules. For example,
+in \name, applications would have read and write access to their stack, heap and
+data regions and execute access to their code segments, while all other memory
+accesses would be mediated through the kernel via system calls. However, this
+approach has two main deficiencies:
+
+\begin{enumerate}
+  \item The kernel must choose between dynamically allocating memory in response to
+  application requests in kernel memory or compromising on the integrity of
+  kernel data structures.
+
+  \item It needlessly increases the complexity of accessing hardware resources
+  that are common in embedded applications such as the GPIO.
+
+\end{enumerate}
+
+Instead, \name treats allocation and access control separately. Applications are
+given complete access (read and write) to their stack and data segments.
+However, the heap is divided between the kernel and application---the
+application heap grows up while the application-specific kernel heap grows down.
+The boundry between the two changes dynamically as memory is allocated to
+maximize utilization. In the case that an application heap is exhausted, either
+by the applicatoin itself or by the kernel, the application is terminated and
+restarted, without effect on the kernel.
