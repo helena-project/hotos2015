@@ -1,15 +1,45 @@
 \section{Challenges}
+
+\subsection{Using a Safe Programming Language}
+
 \begin{enumerate}
-  \item The compiler and OS should synthesize a multi-core execution plan
-  subject to developer configuration/annotation in the code and, potentially,
-  real time constraints.
+  \item Accessing globals is fundamentally part of operating systems development
+    (e.g. hardware memory registers), but access to global variables is not
+    thread-safe and therefore considered ``unsafe'' in languages like Rust.
+    While there is prior art wrapping an unsafe core with an safe interface,
+    it's not clear where to draw the line -- which code should be trusted with
+    access to unsafe features?
 
-  \item What is the execution model?
+  \item Certain common constructs in high-level programming languages like
+    closures often rely on dynamic allocation outside the stack. Embedded
+    operating systems usually avoid allocating memory dynamically since memory
+    is usually limited in embedded environments and the kernel cannot rely on
+    user intervention to recover from fatal runtime errors---instead embedded
+    operating systems prefer to rely on compile-time guarantees that memory
+    requirements are met.
 
-  \item The kernel must provide a way of inspecting the state of the system
-  during debugging. For example, in TinyOS, timer callbacks are determined
-  statically, but this would not be the case in a syscall based system with
-  dynamic applications. The kernel should therefore provide a way to query,
-  e.g., which timer's are currently outstanding.
-
+  \item Other concerns
 \end{enumerate}
+
+\subsection{Doing Without Virtual Memory}
+
+\begin{enumerate}
+  \item Swapping due to memory use
+  \item Allocating application memory. Specifically, virtual memory affords the
+    operating system the ability to allocate pages dynamically to an application
+    as it requires them (for example, dynamic stack growth in high-level
+    languages). This is harder without virtual memory since memory that appears
+    continuous to applications {\emph must} be continuous in physical memory.
+    Moreover, relocating memory would require changing pointers in application
+    code and data structures.
+\end{enumerate}
+
+\subsection{Heterogenous Platforms}
+
+Platforms with multiple microprocessors are not like multi-core desktop
+operating systems. They typically do not share caches or even main memory.
+Often microcontrollers, while from a similar family (like the cortex-m) have
+different manufaturer specific features and configurations or are different
+architecture versions. As a result, we cannot trivially move work from one
+processor to another since that would require relocating memory pointers and
+code may simply not be portable.
