@@ -1,7 +1,6 @@
 \section{Operating System Considerations}
+%\subsection{Evolved Embedded Applications}
 
-
-\subsection{Evolved Embedded Applications}
 In a first evolutionary cycle of the embedded devices applications were written
 as a essential part of a runtime environment on the device. During secondary
 cycle operating systems like TinyOS, Contiki, FreeRTOS emerged separating
@@ -17,10 +16,11 @@ multi-billion companies like Samsung, Telefonica and GE innovating with SimBand,
 %~\endnote{http://bb-smartsensing.com/wzzard-sensing-platform/}, ThinkingThings
 %~\endnote{http://www.thinkingthings.telefonica.com/}, Spotter UNIQ
 %~\endnote{https://www.quirky.com/shop/982-spotter-uniq-customizable-multipurpose-sensor}
-The trend is to create a core hardware platform where adding sensory
-peripherals is done by consumer in a Lego-like fashion.
+The aim is to create a core hardware platform where adding sensory
+peripherals is done by consumer in a Lego-like fashion while developer compiles
+application with provided SDK.
 
-There trends completely change the way applications for the embedded devices
+These trends completely change the way applications for the embedded devices
 have been developed last five decades. Developer have very little control on the
 application execution model, its coexistence with other application and what
 peripherals are connected to the embedded device. Instead application developer
@@ -28,23 +28,24 @@ expect that underlying operating system will perform fair resource allocation,
 protect the application from malicious or malfunctioning applications and
 peripherals. 
 
-
-% about execution mode
-
-% about abstraction
-
-% connect to rest paper from expectations
+Given the paradigm shift in embedded devices we design new operating system
+\name that supports a combinations of goals:
 
 
+\begin{itemize}
+  \item Event-driven execution model
+  \item Loadable applications, services and drivers
+  \item Reliable and Safe %isolation
+  \item Energy efficient 
+\end{itemize}
 
-We believe that new trends in the ecosystem of embedded applications require a
-new set of goals for embedded opearting systems. \name is a next-generation
-embedded operating system we are currently developing that takes advantage of
-recent developments in microcontroller harware and modern programming language
-features to enable multi-application embedded products. \name is designed to
-support a number of goals:
-
-{\bf Event-driven execution model}.
+\subsection{Application execution model}
+\begin{figure}
+ \centering
+\includegraphics[width=1\columnwidth]{img/appcycle.png}
+\caption{Application life cycle.}
+ \label{fig:appcycle}
+\end{figure}
 
 {\bf Flexible application programming}. Unlike previous embedded operating
 systems like TinyOS~\cite{tinyos} and Contiki~\cite{contiki} which are linked
