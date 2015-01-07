@@ -22,10 +22,16 @@
 % This version uses the latex2e styles, not the very ancient 2.09 stuff.
 \documentclass[letterpaper,twocolumn,10pt]{article}
 \usepackage{usenix,epsfig,endnotes,xspace}
-\usepackage[protrusion=true,expansion=true,kerning]{microtype} % Prettier text
-%\usepackage[subrefformat=parens,labelformat=simple]{subcaption}   % Replaces both subfig and subfigure
-\usepackage{textcomp}     % Provides \textmu for upright mu's
-\usepackage[bookmarks]{hyperref}
+\usepackage[protrusion=true,expansion=true,kerning]{microtype}         % Prettier text
+\usepackage{soul}                                                      % Provides \hl
+%\usepackage[subrefformat=parens,labelformat=simple]{subcaption}        % Replaces both subfig and subfigure
+\usepackage{textcomp}                                                  % Provides \textmu for upright mu's
+
+\usepackage[usenames,dvipsnames,svgnames]{xcolor}                      % Allow the use and definition of colors
+\usepackage[colorlinks=true,citecolor=violet,urlcolor=blue]{hyperref}  % Creates hyperlinks from ref/cite
+\hypersetup{pdfstartview=FitH}                                         % Sets default zoom to 100% width 
+\usepackage[capitalise,nameinlink,noabbrev]{cleveref}                  % Do the right thing with fig/table references
+
 
 \newcommand{\name}{Tock\xspace}
 
