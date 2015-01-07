@@ -1,15 +1,17 @@
-\section{Memory Model}
+\section{\name: a Secure Embedded OS}
 
-Unlike desktop operating systems, microcontrollers with memory protection have
-no support for virtual addressing. As a result, any executing thread can attempt
-load and store operations to any address in memory, including sensitive kernel
-buffers or hardware memory registers. The memory protection unit (MPU) allows an
-operating system to protect sensitive memory regions from malicious or buggy
-applications by marking memory regions with read, write and execute permission.
-These permission take effect when the processor is in unprivileged mode.
-However, using access control instead of virtual memory for protection requires
-well behaved applications to know exactly where memory regions reside and which
-regions it has access to.
+In our ongoing project, \name, we build a new embedded operating system designed
+to satisfy the goals and constraints described in Sections~\ref{protection}
+and~\ref{os-considerations}. Specifically, we are building a operating system
+that targets multi-application platforms where several untrusted applications
+will run concurrently, and for a large ecosystem of hardware platforms where we
+cannot assume device drivers are bug-free. We constrained \name to target
+platforms with at least one ARM Cortex-M series microprocessor with a memory
+protection unit. This sections introduces the current architecture of \name at a
+high level and describes the unique memory layout that allows \name to balance
+embedded systems requirements in a multi-application environment.
+
+\subsection{Architecture}
 
 \subsection{The Cortex-M MPU}
 
@@ -25,6 +27,17 @@ active regions. Finally, memory regions and protection bits can be changed
 during exection, for example while context switching between applications.
 
 \subsection{Memory Regions in \name}
+
+Unlike desktop operating systems, microcontrollers with memory protection have
+no support for virtual addressing. As a result, any executing thread can attempt
+load and store operations to any address in memory, including sensitive kernel
+buffers or hardware memory registers. The memory protection unit (MPU) allows an
+operating system to protect sensitive memory regions from malicious or buggy
+applications by marking memory regions with read, write and execute permission.
+These permission take effect when the processor is in unprivileged mode.
+However, using access control instead of virtual memory for protection requires
+well behaved applications to know exactly where memory regions reside and which
+regions it has access to.
 
 The operating system has roles with respect to application memory. First it
 manages where applications are allowed to allocate memory. Second it manages
