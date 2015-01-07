@@ -5,14 +5,22 @@
 In Tanenbaum's \emph{Modern Operating Systems} he asserts, ``The main property
 which distinguishes embedded systems from handhelds is the certainty that no
 untrusted software will ever run on it''~\cite{tanenbaum}. In this paper we
-argue that this is no longer the case. As a class of device, embedded systems
-are evolving beyond the single-application case, and as a consequence, they
-require their operating system to provide process isolation, enforced resource
+argue that this is no longer the case.
+% As a class of device, embedded systems
+% are evolving beyond the single-application case, and as a consequence, they
+% require their operating system to provide process isolation, enforced resource
+% arbitration, and protection.
+Embedded systems
+are evolving beyond the single-application case and now
+require an operating system that provides process isolation, enforced resource
 arbitration, and protection.
 
-Today, we are designing \name, a new embedded operating system that (amongst
-other goals) explores how to add protection as a primitive to constrained
-systems. We begin by examining recent advances and trends in embedded
+% Today, we are designing \name, a new embedded operating system that (amongst
+% other goals) explores how to add protection as a primitive to constrained
+% systems
+\name explores how to add protection as a primitive to constrained
+systems.
+We begin by examining recent advances and trends in embedded
 hardware and systems language design with an eye towards applying these
 new capabilities to our embedded OS concept.
 
