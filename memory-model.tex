@@ -36,11 +36,17 @@ and turning interrupts on and off. A device driver runs with the same
 can only use the kernel provided hardware abstractions to access hardware, that
 dynamic memory allocation is limited to load time and stack allocation, and that
 drivers cannot interfere with each other by accidentally sharing underlying
-hardware resources. The third layer, applications, is isolated using hardware
-protection mechanisms. Applications run in an unprivileged CPU mode that
-restricts access to privileged CPU and hardware registers, such as the control
-and program status CPU registers and the memory protection unit hardware
-registers.
+hardware resources.
+
+The third layer, where applications run, is isolated using hardware protection
+mechanisms. Applications, which do not have to be written in Rust, run in an
+unprivileged CPU mode that restricts access to privileged CPU and hardware
+registers, such as the control and program status CPU registers and the memory
+protection unit hardware registers. Applications can access hardware resources
+in two ways. First, through a system call interface exposed by the kernel and
+device drivers.  Second, the kernel can give an application direct read and/or
+write access to particular hardware registers.
+
 
 \subsection{The Cortex-M MPU}
 
@@ -108,3 +114,4 @@ The boundry between the two changes dynamically as memory is allocated to
 maximize utilization. In the case that an application heap is exhausted, either
 by the applicatoin itself or by the kernel, the application is terminated and
 restarted, without effect on the kernel.
+
