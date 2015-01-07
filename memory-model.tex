@@ -1,15 +1,19 @@
 \section{\name: a Secure Embedded OS}
 
-In our ongoing project, \name, we build a new embedded operating system designed
-to satisfy the goals and constraints described in Sections~\ref{protection}
-and~\ref{os-considerations}. Specifically, we are building a operating system
-that targets multi-application platforms where several untrusted applications
-will run concurrently, and for a large ecosystem of hardware platforms where we
-cannot assume device drivers are bug-free. We constrained \name to target
-platforms with at least one ARM Cortex-M series microprocessor with a memory
-protection unit. This sections introduces the current architecture of \name at a
-high level and describes the unique memory layout that allows \name to balance
-embedded systems requirements in a multi-application environment.
+In our ongoing project, \name, we are building a new embedded operating system
+specifically designed for platforms running multiple, potentially untrusted
+applications concurrently and third-party, contributed device drivers that are
+assumed to be buggy. \name uses three protection mechanisms to protect three
+different components in the operating system. The kernel itself is written in
+Rust, allowing \name to use language level protection, such as memory safety and
+ownership, to protect the core of the kernel (e.g. the scheduler and hardware
+abstraction layer) from contributed device drivers. \name uses software managed
+memory protection to isolate third-party applications from each other and the
+kernel. Finally, where available, multiple microcontrollers on the same platform
+are use to protect applications with timing constraints against starvation and
+in cases where timing and other side-channels are a concern. The remainder of
+this section gives an overview of the \name architecture and dives into \name's
+use of the memory protection unit and application memory layout.
 
 \subsection{Architecture}
 
