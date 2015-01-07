@@ -1,19 +1,46 @@
+
+
 Microcontroller operating systems and frameworks typically assume that a single,
-monolithic application will run on an embedded system. In fact, historically,
-power consumption, memory and code sizes, and lack of hardware support have
-constrained microcontroller applications to be single-function. This is no
-longer the case with modern hardware. Modern microcontrollers, like the Atmel
-SAM4L (an ARM Cortex-M4), provides over six times more SRAM and over five times
-larger flash than the TI~MSP430 that powered the TelosB motes while maintaining
-similar power draws (90~{\uA}/MHz active and 3~\uA at sleep).
-Simultaneously embedded products are becoming a development platforms and an
-application ecosystems for products like the Pebble watch. Additionally, a set
-of modular embedded devices is emerging. Devices like SimBand, Wzzard and
-ThinkingThings have a core part to which additional modules can be attached to
-extend the functionality. These modules can be developed by the third parties
-and have own microcontroller with runtime environment.
-The operating systems community should leverage advancements in hardware,
-programming languages as well as our experience from the Web, and other
-application rich ecosystems, to build the next generation of embedded operating
-systems.
+monolithic application will run on an embedded system.
+Traditionally,
+optimizing for power, squeezing applications into minimal code and memory
+allocations, and lacking hardware support
+% In fact, historically, power draw, memory and code sizes, and lack of hardware support
+have
+constrained microcontroller applications to be single-function.
+Newer hardware, however, has changed this paradigm.
+The microcontroller is growing up and can now support
+a secure, trusted kernel and
+multiple, isolated, concurrent, and dynamically-loaded applications,
+all while operating on the power budgets that originally made this device
+class feasible.
+While the hardware support is present, the software ecosystem to capitalize on these
+advances is lagging behind. To remedy this, we propose Tock, a new embedded operating system design
+that builds on established operating system
+principles while adapting to the embedded system environment. Tock exploits
+memory protection units, advancements in modern systems programming languages,
+and the event driven nature of embedded applications to allow a core kernel,
+device specific drivers, and untrusted applications to coexist on a single
+microcontroller. This new operating system will allow embedded devices to
+mature beyond program-once, deploy-once systems and into re-usable, ubiquitous,
+and reliable computing platforms.
+
+
+
+
+% This is no
+% longer the case with modern hardware. Modern microcontrollers, like the Atmel
+% SAM4L (an ARM Cortex-M4), provides over six times more SRAM and over five times
+% larger flash than the TI~MSP430 that powered the TelosB motes while maintaining
+% similar power draws (90~{\uA}/MHz active and 3~\uA at sleep).
+% Simultaneously embedded products are becoming a development platforms and an
+% application ecosystems for products like the Pebble watch. Additionally, a set
+% of modular embedded devices is emerging. Devices like SimBand, Wzzard and
+% ThinkingThings have a core part to which additional modules can be attached to
+% extend the functionality. These modules can be developed by the third parties
+% and have own microcontroller with runtime environment.
+% The operating systems community should leverage advancements in hardware,
+% programming languages as well as our experience from the Web, and other
+% application rich ecosystems, to build the next generation of embedded operating
+% systems.
 
