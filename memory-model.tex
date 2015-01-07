@@ -17,6 +17,31 @@ use of the memory protection unit and application memory layout.
 
 \subsection{Architecture}
 
+In traditional embedded operating systems, a single application is
+compiled along with a library operating system to a single executable that is
+loaded on to the target device. The application, device drivers, scheduler, and
+other OS services run with the same CPU privileges, share memory and have equal access
+to the same hardware resources. \name takes a radically different approach. In
+\name, there is a standalone, portable kernel that is composed, at compile-time,
+with approriate device drivers for the platform and enables dynamic loading of
+third-party applications at runtime.
+
+At a high level, \name has three layers of computational units. At the lowest
+layer, the core of the kernel---the scheduler, task manager, hardware
+abstraction layer, etc---has completely control of the hardware, including
+memory-unsafe and thread-unsafe operations such as writing to arbitrary memory
+and turning interrupts on and off. A device driver runs with the same
+\emph{hardware} privileges as the core kernel but inside a compile time,
+\emph{language-level} sandbox. The language sandbox enforces that device drivers
+can only use the kernel provided hardware abstractions to access hardware, that
+dynamic memory allocation is limited to load time and stack allocation, and that
+drivers cannot interfere with each other by accidentally sharing underlying
+hardware resources. The third layer, applications, is isolated using hardware
+protection mechanisms. Applications run in an unprivileged CPU mode that
+restricts access to privileged CPU and hardware registers, such as the control
+and program status CPU registers and the memory protection unit hardware
+registers.
+
 \subsection{The Cortex-M MPU}
 
 The Cortex-M MPU allows the kernel to defined eight memory regions. Each memory
