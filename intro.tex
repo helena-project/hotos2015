@@ -9,101 +9,70 @@ NATs, automatic virus scanners, no-execute bits, virtual machines,
 increasing use of secure HTTP, and and a growing infrastructure for 
 authenticating downloaded data and code.
 
-Today, we see the emergence of ``intelligent'' things that integrate computing
-with physical devices. Smart watches such as the Pebble provide a clock
-application and a limited set of applets, smart light bulbs such as the
-Phillips Hue support single functions---on and off, brighter and dimmer---,
-while smarter light bulbs such as the PLAYBULB pulse with the music they play
-from their integrated speaker.  As embedded systems grow from niche systems
-into a more general purpose computing infrastructure, there will be a need to
-dynamically load applications and share the infrastructure across multiple
-applications.  For example, the Pebble watch supports loading executable code
-that can use the builtin sensors and display as well as communicate with
-apps on a connected mobile phone.
+Today, we see the emergence of ``intelligent'' things that integrate
+computing with physical devices. Smart watches such as the Pebble
+provide a clock application and a limited set of applets, smart light
+bulbs such as the Phillips Hue support single functions---on and off,
+brighter and dimmer---, while smarter light bulbs such as the PLAYBULB
+pulse with the music they play from their integrated speaker.  As
+embedded systems grow from narrow applications into a more general
+purpose computing infrastructure, there will be a need to dynamically
+load applications and share the infrastructure across multiple
+applications.  This trend is already starting: the Pebble watch, for
+example, supports loading executable code that can use the builtin
+sensors and display as well as communicate with apps on a connected
+mobile phone.
 
-Historically,
-embedded systems have been single-purpose, single-application devices.
-As a result, embedded ``operating systems'' have no security mechanisms.
-Microcontroller families such as the MSP430 and Atmega do not provide
-any hardware mechanisms to support security. With only a few kilobytes of RAM,
-they lack virtual memory, memory protection, and lack caches. 
-An application developer compiles a monolithic program image that runs 
-a single application which has unfettered access to underlying hardware. 
+Historically, embedded systems have been single-purpose,
+single-application devices.  A developer compiles a monolithic program
+image combining OS and application that has total access to
+underlying hardware.  This lack of a security model is due to the
+limitations of the hardware itself. Microcontroller families such as
+the MSP430 and Atmega lack virtual memory and memory protection.  As a
+result, embedded ``operating systems'' have no security mechanisms and
+applications must be trusted completely.
 
 But in the past few years, a new generation of embedded processors
 has emerged. These processors, based on the ARM Cortex M architecture,
 sit in a middle ground between full-fledged CPUs and microcontrollers.
-They are 32 bits, and have tens to hundreds of kilobytes of RAM. They have
-memory protection, but no virtual memory. They provide many peripherals
-and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
-have sub-\uA sleep currents. The Nordic Semiconductor nRF51822, for example,
+Like some mid-1980s processors, they are 32 bits, have memory protection, and
+run at tends of MHz. But like microcontrollers, they have tens to
+a few hundred of kilobytes of RAM, lack virtual memory,
+provide the many peripherals
+and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) that embedded
+systems need and 
+have sub-\uA sleep currents necessary for battery-based operation.
+The Nordic Semiconductor nRF51822, for example,
 is an integrated system-on-a-chip (SoC) with a Bluetooth Low Energy 
-transceiver and a Cortex M0 processor costs a little more than \$1.
+transceiver and a Cortex M0 processor (16MHz, 32kB RAM, 256kB flash)
+costs a little more than \$1. 
 
-%%it is not true for Contiki. You can compile your application, send the code
-% which will be open by os. Hence it is NOT linked into OS at compile time
-The key abstraction lacking in traditional embedded operating systems, but
-essential to enable the next generation of embedded devices is protection. In
-operating systems like TinyOS applications are linked into the
-binary image at compile time and all parts of the code have access to the
-same address- and name-space. FreeRTOS has a notion of \emph{tasks} which run
-independently of the operating system, but this separation is not enforced;
-applications have complete access to operating system memory regions and
-hardware resources.
+While these new embedded processors have slighly more RAM and run slightly
+faster than microcontrollers, we argue that their inclusion of memory 
+protection is far more significant. Protection is the key abstraction that 
+current embedded operating
+systems lack but which is essential to enable the next generation
+of embedded multi-application devices. Memory protection can isolate 
+applications from one another and the kernel from applications. However,
+this isolation and safety is only as good as the kernel itself. As numerous
+recent results have shown, OS kernels contain scores of memory access
+bugs that 
+applications can use to gain unauthorized access~\cite{nickolai}. We can
+take protection one step further by writing the OS kernel in a type-safe
+language.  The
+relative simplicity of Cortex M processors and embedded operating system
+APIs means that writing such a kernel is a small and manageable task,
+still open to easy extension and evolution.
 
-We introduce \name, a next-generation operating system for embedded systems.
-Modern microcontrollers are both feature rich, with 32-bit processors and
-diverse peripherals, and feature poor, with limited memory, energy-hungry
-storage and communication, and restricted hardware support (MPUs instead of
-MMUs, if at all).
-%
-It is time for the embedded operating system to evolve from single-application-centric
-design---a glorified hardware abstraction layer---% glorified is too colloquial
-% "a set of advanced libraries"? sells them too short... fixme
-to a real operating system, % don't like "real" either; general-purpose, proper?
+This paper argues that it is time for embedded operating systems to graduate 
+from  a glorified 
+hardware abstraction layer to a real operating system, 
 one that enables and encourages multiple concurrent, isolated applications,
 provides both hardware abstractions and low-level hardware access, and offers
 critical services for the applications of the Internet of Things.
-%Today's fitness tracker can easily double as a medication reminder, if only
-%there was a means to install and run another application.
-
-% Hue: STM32F + CC2530 (zigbee radio)
-% Pebble: Also an ST M3
-% Jawbone: MSP430F5528
-% Fitbit: STM 32L151C6 (another M3) + nRF8001
-
-% THOUGHT:
-%
-% We make an indirect argument here by designing and OS for ARM Cortex-M.
-% Namely that we are leaving other archiectures (pic, msp, avr) behind. There
-% is precedent for this, x86 won as a general purpose archiecture, a key step
-% towards moving forward in the embedded space is picking an archiecturural
-% winner, committing to it, and moving forward. We are doing this implicitly,
-% perhaps we should consider adding some text and making it an explicit choice
-% somewhere.
-
-% L: I don't think that commitement to ARM benefits the clarity or the research
-% contribution of the paper. Rather describing desireble MCU functions for
-% the future of embeded devices makes stronger argument.
-
-While protection is not a new primitive in operating system design, it is a
-new primitive for embedded operating system design. In the design of \name, we
-take advantage of three protection mechanisms recently available to embedded
-systems builders:
-
-\begin{enumerate}
-  \item \emph{Language level protection} including type safety, memory safety
-    and thread safety support in modern systems programming languages.
-  \item \emph{Software-managed memory protection} available in the newest
-    low-power embedded microcontrollers allow the operating system to enforce
-    privilege separation in hardware without the cost or complexity of a virtual
-    memory.
-  \item \emph{Physically timing protection}. Many new embedded products
-    integrate multiple microcontrollers~\endnote{Nest protect has no less than
-    three Cortex-M microcontrollers. An M4 for the application controller, an
-  M0+ used as a peripheral coprocessor and 802.15.4 SoC with an onboard M3}.
-  Operating systems should take advantage of this to guard time-sensitive
-  components from others that might compromise timing guarantees (e.g.
-  computation heavy tasks).
-\end{enumerate}
-
+As a concrete example of what such an operating system might look like,
+it presents \name, a new operating system that combines hardware-based
+memory protection and language-based type safety to provide a secure,
+robust platform for embedded applications. The need to integrate untrusted
+application code in C with a type-safe kernel raises interesting challenges
+in how data passes between them and how the OS manages its memory layout.
