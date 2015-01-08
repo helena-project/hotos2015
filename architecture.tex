@@ -150,4 +150,19 @@ subregions.
 
 \end{enumerate}
 
-TODO: application internal memory structure
+An application's memory region is not entirely it's own. Most of it's memory
+used for it's stack and static variables (at the bottom), and heap. However, the
+kernel may also ``borrow'' memory from the top of an application's memory region
+for application-specific kernel data structures. This region, which may change
+in size, is \emph{inside} the application's memory space, but is marked as read
+and write protected when the application is running. Therefore, the kernel, or device
+drivers, can allocate memory dynamically in response to application without
+sacrificing the reliability of never dynamically allocating in the kernel itself
+and while mainting integrety and confidentiality of shared kernel data
+structures. For example, when an application registers to a timer callback, the
+timer device driver adds the request to it's list of pending timers by
+allocating the new list node to in the application's memory. Since the link includes
+forward and backward list pointers, it's imperative that despite being in the
+application's memory, this link's integrity be maintained. Moreover, the values
+of the links might leak information about other applications.
+
