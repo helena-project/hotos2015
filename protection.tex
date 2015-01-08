@@ -8,17 +8,10 @@ untrusted software will ever run on it''~\cite{tanenbaum}. In this paper we
 argue that this is no longer the case. Embedded systems are evolving beyond the
 single-application case and now require an operating system that provides
 protection to applications in the form of isolation and resource arbitration.
-
+%
 This section examines recent advances and trends in embedded hardware and
 programming languages that enable novel protection primitives in constrained
 systems.
-
-%\name takes advantage of three emerging trends, modern language design, new
-%microcontroller hardware capabilities, and contemporary multi-MCU system design,
-%that afford new opportunites to provide protection.
-
-%\input{protection-memory}
-%\input{protection-multicore}
 
 \subsection{Hardware Advances and Trends}
 
@@ -27,8 +20,8 @@ While ARM's A-series is substantially more capable and is used in wall-powered
 devices such as the Raspberry Pi~\cite{rpi} and BeagleBone Black~\cite{bbb},
 its significant power draw (over 1~W in active mode) make it infeasible for
 low-power, battery operated devices.
-In contrast, the Cortex-M series microcontrollers have power draws conducive
-to low-power operation while adding hardware features that enable protection.
+In contrast, Cortex-M series microcontrollers have power draws conducive to
+low-power operation while adding hardware features that enable protection.
 
 
 % Modern ARM devices come in three flavors: the powerful A-series
@@ -37,9 +30,13 @@ to low-power operation while adding hardware features that enable protection.
 % \hl{XXX: Why M over A}
 
 {\bf Memory Protection Units.}
-In lieu of costly Memory Management Units (MMUs), the Cortex-M series includes
-a Memory Protection Unit (MPU). Like MMUs, MPUs trap illegal memory accesses
-(e.g. writing to read-only memory).
+As Cortex-M's are a microcontroller design---a System-on-Chip with tightly
+integrated memory---they do not (nor will they likely ever) integrate enough
+memory to merit a Memory Management Unit (MMU). Instead, the Cortex-M series
+includes a Memory Protection Unit (MPU), a lightweight, efficient construct
+that provides the same memory protection features (e.g. traps illegal memory
+accesses such as writing to read-only memory) as an MMU without address
+translatation.
 With OS assistance an MPU
 with position independent code (PIC) can enable isolated applications, shared
 libraries, and even possible relocation of running code.
@@ -70,7 +67,7 @@ processors provide an opportunity for
 the strictest isolation, stochastic and deterministic real-time schedules, and
 computation offloading. It is less clear, however, how to abstract
 system-specific hardware for general applications and is an open question in
-the design of \name.
+the design of a new operating system.
 
 
 % ARM TrustZone is also functionally like having a separate core, or at least
