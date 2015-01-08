@@ -10,18 +10,18 @@ a growing infrastructure for authenticating downloaded data and code.
 
 Today, we see the emergence of ``intelligent'' \textit{things} that integrate
 computing with physical devices. Smart watches such as the Pebble~\cite{pebble}
-provide a clock application and a limited set of applets, smart light
-bulbs such as the Phillips Hue~\cite{hue} support simple functions---
-turn on, turn blue, glow brighter---,
-%on and off, brighter and dimmer---,
-while smarter light bulbs such as the PLAYBULB~\cite{playbulb} pulse to the
-music playing from their integrated speaker.  As embedded systems grow from
-narrow applications into a more general purpose computing infrastructure,
-there will be a need to dynamically load applications and share the
-infrastructure across multiple applications.  This trend is already starting:
-the Pebble watch, for example, supports loading executable code that can use
-the built-in sensors and display as well as communicate with apps on a
+provide a clock application and a limited set of applets. Smart light bulbs such
+as the Phillips Hue~\cite{hue} support simple functions--- turn on, turn blue,
+glow brighter---, while smarter light bulbs such as the PLAYBULB~\cite{playbulb}
+pulse to the music playing from their integrated speaker.  As embedded systems
+grow from narrow applications into a more general purpose computing
+infrastructure, there will be a need to dynamically load applications and share
+the infrastructure across multiple applications.  This trend is already
+starting: the Pebble watch, for example, supports loading executable code that
+can use the built-in sensors and display as well as communicate with apps on a
 connected mobile phone.
+
+%on and off, brighter and dimmer---,
 
 But historically, embedded systems have been single-purpose, single-application
 devices.  A developer compiles a monolithic program image, combining the OS and
@@ -58,13 +58,13 @@ APIs means that writing such a kernel is a manageable task.
 % still open to easy extension and evolution.
 
 We believe it is time for embedded operating systems to graduate from  a
-glorified hardware abstraction layer to a real operating system: one that
+glorified hardware abstraction layer to a real operating system, one that
 enables and encourages multiple concurrent, isolated applications, provides both
 hardware abstractions and low-level hardware access, and offers critical
-services for the applications of the Internet of Things. As a concrete example
+services to the applications of the Internet of Things. As a concrete example
 of what such an operating system might look like, we present \name, a new
 operating system that combines hardware-based memory protection and
-language-based type safety to provide a secure, robust platform for embedded
+language-based safety to provide a secure, robust platform for embedded
 applications.
 
 % Sergio's note: This isn't particularly difficult since we've already discussed
