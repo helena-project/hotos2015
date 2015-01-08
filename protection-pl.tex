@@ -5,30 +5,22 @@ programming, including operating systems development. C is inherently an unsafe
 programming language \cite{kint:osdi2012, undefined:apsys2012}. As such, much
 effort has been made to develop operating systems in high-level languages with
 stricter semantics \cite{singularity:sigops, house:icfp2005, unikernels:2013}.
-Type safety, memory safety, and strict aliasing each provide support for
-operating system protection at the language level.
+These efforts have shown that language features like type safety, memory safety,
+and strict aliasing can provide support for operating system protection.
+Unfortunately, high-level languages often rely heavily on things like dynamic
+allocation and garbage collection, which make them inapproriate for an embedded
+operating system. Luckily, low-level languages are beginning to include many of
+these features~\cite{c++14,rust}, making them available to embedded OS builders.
 
-\paragraph{Strong Type Safety.}
-Strong, strict types allow for abstractions of low-level hardware mechanisms
-that cannot be subverted by safe code. Because the type system cannot be
-subverted, hardware mechanisms correctly modeled as type values exposing typed interfaces
-guarantee that users of the interface are utilizing the underlying hardware in a
-safe manner.
-% Of course, the underlying interface implementation continues to be
-% responsible for implementing the desired logic correctly.
-Taking advantage of strict typing requires minimizing the amount of unsafe code,
-i.e. code that interfaces with hardware directly.
-Although challenging, we argue that careful interface design will allow
-for minimum unsafe code in the operating system and the maximum cost-free
-protection from a strong type system.
-% As such, it is
-% important to design interfaces that minimize the ability for logic errors to be
-% introduced via their implementation. We argue that through careful interface
-% design, unsafe code, or code that interfaces with the hardware directly, can be
-% minimized, reducing the amount of code that must be audited to ensure
-% correctness. Identifying the minimum amount of unsafe code to expose a safe
-% interface is a core challenge, but successfully doing so results in strong,
-% cost-free protection.
+\paragraph{Type Safety.}
+Strict types allow trusted modules to expose low-level hardware through an
+interface that cannot be subverted by untrusted client-code. In turn, a well
+designed type-safe interface can help guarantee constrain client-code to
+particular operations on the underlying hardware. Moreover, compile-time
+optimzations can make suc interfaces cost-free without sacrificing safety. As a
+result, careful interface design can allow for minimum unsafe kernel code. We
+argue that pricipled methods for designing such interfaces should be a goal of
+future operating systems research.
 
 \paragraph{Memory Safety.}
 Issues with memory safety---dangling pointers, use-after-free and
