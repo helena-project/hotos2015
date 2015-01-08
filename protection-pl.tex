@@ -23,45 +23,14 @@ argue that pricipled methods for designing such interfaces should be a goal of
 future operating systems research.
 
 \paragraph{Memory Safety.}
-Issues with memory safety---dangling pointers, use-after-free and
-double-free errors, access to unallocated memory, and pointer arithmetic
-errors---have long plagued operating systems written in
-languages with weak memory semantics.
-% Dangling pointers, use-after-free and
-% double-free errors, access to unallocated memory, and pointer arithmetic errors
-% are a few of the issues kernel developers encounter when writing in such a
-% language.
-A language that guarantees memory safety ensures that some or all of
-these types of errors cannot occur once a program has compiled.
-For instance, a kernel with drivers written in a memory safe language are
-memory isolated without the need for hardware support as the
-application can only access memory that has been allocated to it.
-% A memory safe application can only access memory that has been allocated to it.
-% This means that a kernel with drivers written in a memory safe language are
-% memory isolated without the need for hardware support: It is impossible for a
-% memory-safe driver to sully the integrity of a kernel written in the same
-% language.
-
-% A high-level language usually guarantees memory safety through automatic garbage
-% collection and bounds checking; the language allocates and frees all memory for
-% the user and checks all pointer arithmetic. Because the garbage collector tracks
-% active references, automatic garbage collection imposes a runtime performance
-% penalty that is difficult to determine deterministically. In a constrained
-% system, where applications may require tight bounds on their execution,
-% deterministic performance is critical. As such, automatic garbage collection is
-% unlikely to be a good fit for embedded systems.
-
-The kernel, however, must still be able to access memory directly
-to configure hardware resources.
-% Of course, to program hardware, the kernel must be able to access memory
-% directly.
-As with type safe interfaces, unsafe accesses must be audited to ensure
-the overall interface is memory safe, enabling both safe drivers and
-% the ideal is to provide a memory safe
-% interface to carefully audited memory unsafe operations. This guarantees the
-% memory safety of software utilizing the memory safe interfaces, such as drivers,
-% while enabling
-the kernel's low-level implementation.
+Memory safety bugs---dangling pointers, double-free, access to unallocated
+memory, and pointer arithmetic errors---plague operating systems
+written in languages with weak memory semantics.
+Languages that guarantee memory safety obviate such bugs by catching them at
+compile-time.
+For instance, a kernel written in a memory safe language can enforce memory
+isolation of drivers at compile time, without relying on hardware
+support~\cite{spin:sosp}.
 
 \paragraph{Strict Aliasing.}
 Strict aliasing rules, such as unique references and read/write references,
