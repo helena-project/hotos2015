@@ -2,92 +2,145 @@
 \label{os-considerations}
 %\subsection{Evolved Embedded Applications}
 
-In the first evolutionary cycle of embedded devices, applications were written
-as an integral part of the runtime environment on the device. The second cycle
-brought operating systems like TinyOS, Contiki, FreeRTOS and conceptually
-separated application and OS code. The development became easier allowing
-complexity of applications to remain manageable as they grew. However, the
-resulting code was still compiled into a monolithic image and uploaded to the
-device.
+Embedded operating systems have shifted from monolithic applications to
+separate OS and application code that are compiled to monolithic applications.
+Now, the operating system must shift again to support
+multiple and independently
+developed applications co-existing on the same device (Pebble~\cite{pebble} watch),
+and modular embedded devices
+% are becoming modular. The latter is evident with
+% multi-billion companies like Samsung, Telefonica and GE innovating with
+(SimBand~\cite{simband}, Wzzard~\cite{wzzard}, ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq}).
+Traditional desktop and mobile operating systems, however, are not sufficient
+for the embedded domain. They require virtual memory and are not designed to
+take advantage of MPUs present in the hardware. They are not written in
+modern, safe systems languages and do not provide a mechanism for granting
+applications direct hardware access for performance or application requirements
+purposes. Further, they are not designed for physically isolated but cooperative
+cores.
 
-Now the third evolutionary cycle is emerging: multiple and independently
-developed application must co-exist on the same device % (like in Pebble watch);
-and embedded devices are becoming modular. The latter is evident with
-multi-billion companies like Samsung, Telefonica and GE innovating with SimBand,
-Wzzard, ThinkingThings, and Spotter UNIQ.
-%~\endnote{http://www.samsung.com/us/globalinnovation/innovation_areas/}, Wzzard
-%~\endnote{http://bb-smartsensing.com/wzzard-sensing-platform/}, ThinkingThings
-%~\endnote{http://www.thinkingthings.telefonica.com/}, Spotter UNIQ
-%~\endnote{https://www.quirky.com/shop/982-spotter-uniq-customizable-multipurpose-sensor}
-The aim is to create a core hardware platform where adding sensory
-peripherals is done by the consumer in a Lego-like fashion while the developer compiles the
-application with the provided SDK. %this paragraph needs rephrasing
 
-These trends change the way applications for embedded devices have been
-developed over the last five decades. Application developers have very little
-control over the application execution model, its coexistence with other
-applications, and the peripherals connected to the embedded device. Instead
-developers expect that the underlying operating system will perform fair
-resource allocation, protecting the application from malicious or malfunctioning
-applications and peripherals.
+% In the first evolutionary cycle of embedded devices, applications were written
+% as an integral part of the runtime environment on the device. The second
+% cycle brought operating systems like TinyOS~\cite{tinyos}, Contiki~\cite{contiki}, FreeRTOS~\cite{freertos} and conceptually
+% separated application and OS code. Development
+% % became easier allowing
+% % complexity of applications to remain manageable as they grew.
+% simplified,
+% but the resulting
+% code still compiled to a monolithic image uploaded to the device.
 
-Given the paradigm shift in embedded devices, we propose a design for a new
-operating system, \name, that supports a combinations of goals:
+% Now the third evolutionary cycle is emerging: multiple and independently
+% developed applications co-existing on the same device (Pebble~\cite{pebble} watch),
+% and modular embedded devices
+% % are becoming modular. The latter is evident with
+% % multi-billion companies like Samsung, Telefonica and GE innovating with
+% (SimBand~\cite{simband}, Wzzard~\cite{wzzard}, ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq}).
+% %~\endnote{http://www.samsung.com/us/globalinnovation/innovation_areas/}, Wzzard
+% %~\endnote{http://bb-smartsensing.com/wzzard-sensing-platform/}, ThinkingThings
+% %~\endnote{http://www.thinkingthings.telefonica.com/}, Spotter UNIQ
+% %~\endnote{https://www.quirky.com/shop/982-spotter-uniq-customizable-multipurpose-sensor}
+% % The aim is to create a core hardware platform where adding sensory
+% % peripherals is done by the consumer in a Lego-like fashion while the developer compiles the
+% % application with the provided SDK.
+% %this paragraph needs rephrasing
 
-\begin{itemize}
-  \item Event-driven execution model
-  \item Loadable applications, services and drivers
-  \item Robust, Reliable, Safe and Efficient 
-\end{itemize}
+% These trends completely change the way applications for the embedded devices
+% have been developed over the last five decades. Developers have very little control over the
+% application execution model, its coexistence with other application, and which
+% peripherals are connected to the embedded device. Instead application developers
+% expect that the underlying operating system will perform fair resource allocation,
+% protecting the application from malicious or malfunctioning applications and
+% peripherals.
 
-\subsection{Application execution model}
-%% not sure if this figure is needed
-% \begin{figure}
-%  \centering
-% \includegraphics[width=1\columnwidth]{img/appcycle.png}
-% \caption{Runnable life cycle.}
-%  \label{fig:appcycle}
-% \end{figure}
-It's is not sufficient for a modern operating system allowing multiple
-simultaneous applications only have an event driven or preemptive
-multi-threading. In traditional OS the applications are not interrupted for
-longer period of times and in most of the cases there is no competition for
-resources. Resources need to be fairly distributed and applications, services or
-drivers notified upon event that effects program flow. Critical events are
-initialization of the application, the device is going to or waking up from low
-power mode as well secondary event like interrupts, timer, radio etc.
-% left here for event-driven e.g. Sergio add
+Given the paradigm shift in embedded devices and the inadequacy of current operating
+system solutions, we propose a design for a new operating system,
+\name, that supports a range of goals: an event-driven execution model,
+loadable applications, services, and drivers, and
+robustness, reliability, safety and efficiency.
 
-\subsection{Loadable applications, services and drivers}
+
+
+
+\subsection{Application Execution Model}
+\label{sec:os:execution}
+
+While traditional operating systems support a threaded application execution
+model, \name is based on an event-driven model. Event-driven better matches
+the need of embedded applications which typically wait and respond to
+events, e.g. timer firings, packet receptions, sensor interrupts, etc, and
+have bursty, instead of long-running, periods of computation. The lack of
+multiple cores on embedded microcontrollers also reduces the usefulness
+of threaded execution. Further, considering the resource constraints
+of microcontrollers, requiring applications to be designed in an event-based
+model reduces the complexity of executing multiple applications simultaneously.
+
+
+% %% not sure if this figure is needed
+% % \begin{figure}
+% %  \centering
+% % \includegraphics[width=1\columnwidth]{img/appcycle.png}
+% % \caption{Runnable life cycle.}
+% %  \label{fig:appcycle}
+% % \end{figure}
+% It's is not sufficient for a modern operating system allowing multiple
+% simultaneous applications only have an event driven or preemptive
+% multi-threading. In traditional OS the applications are not interrupted for
+% longer period of times and in most of the cases there is no competition for
+% resources. Resources need to be fairly distributed and applications, services or
+% drivers notified upon event that effects program flow. Critical events are
+% initialization of the application, the device is going to or waking up from low
+% power mode as well secondary event like interrupts, timer, radio etc.
+% % left here for event-driven e.g. Sergio add
+
+
+
+\subsection{Loadable Applications and Drivers}
 % should we talk about what tock does or jsut focut on the new generations of os
 % instead? I prefere the considerations so there is no overlapp and
 % inconsistencies in text
-A modern operating system for embedded devices has to allow attache new
-peripherals and load they drivers, start new services, and load/unload
-applications. The OS is expected to be a full scale modern OS except it has to
-handle all of the constrain of OS for embedded devices. Unlike most desktop and
-server applications, embedded applications must continue to run without end-user
-intervention. There is no console to indicate to the user that an application
-has crashed. Even if a crash could be communicated to the user, there is little
-action they could take. While a Blue-Screen-Of-Death is annoying on a desktop or
-server, it is unacceptable in embedded systems. Moreover, given the variety of
-devices, the OS should allow developer to use any language supporting
-Application Binary Interface, ABI.
+
+A modern operating system for embedded devices has
+to support dynamically loading new applications, the services they require,
+and drivers when new peripherals are attached.
+
+% to allow attache new
+% peripherals and load they drivers, start new services, and load/unload
+% applications. The OS is expected to be a full scale modern OS except it has to
+% handle all of the constrain of OS for embedded devices. Unlike most desktop and
+% server applications, embedded applications must continue to run without end-user
+% intervention. There is no console to indicate to the user that an application
+% has crashed. Even if a crash could be communicated to the user, there is little
+% action they could take. While a Blue-Screen-Of-Death is annoying on a desktop or
+% server, it is unacceptable in embedded systems. Moreover, given the variety of
+% devices, the OS should allow developer to use any language supporting
+% Application Binary Interface, ABI.
+
+
 
 \subsection{Robust, Reliable, Safe and Efficient}
-% isolation incoming somewere here
-Besides separating drivers for core peripherals (SPI, USART, GPIO, etc) and
-device drivers (radio, flash, etc) into separate layers. Modern OS has to
-enforce safety policies not only on applications but also on device drivers. The
-OS has to ensure that at most one driver has access to a specific hardware
- resource---multiplexing must be done explicitly in the core peripheral driver
- or through an intermediate interface. Finally, the OS need to ensure that
- device drivers cannot corrupt kernel memory or perform denial of service
- attacks by drivers. Multiple application on the embedded device also requires
- of to protect the kernel and other applications from malicious actions.
 
-While requirements have resemblance to those of a traditional OS, modern
-embedded OS has to fulfill them with the computational and energy constrains. 
+With resource sharing between applications and the end of exclusively trusted
+software on embedded devices comes the need for better protection guarantees
+from the operating system. The OS must arbitrate and moderate access to
+hardware resources and protect kernel memory from misbehaving applications.
+Further, embedded applications must continue to run without end-user
+intervention as there is little recourse for users.
+
+
+% % isolation incoming somewere here
+% Besides separating drivers for core peripherals (SPI, USART, GPIO, etc) and
+% device drivers (radio, flash, etc) into separate layers. Modern OS has to
+% enforce safety policies not only on applications but also on device drivers. The
+% OS has to ensure that at most one driver has access to a specific hardware
+%  resource---multiplexing must be done explicitly in the core peripheral driver
+%  or through an intermediate interface. Finally, the OS need to ensure that
+%  device drivers cannot corrupt kernel memory or perform denial of service
+%  attacks by drivers. Multiple application on the embedded device also requires
+%  of to protect the kernel and other applications from malicious actions.
+
+% While requirements have resemblance to those of a traditional OS, modern
+% embedded OS has to fulfill them with the computational and energy constrains.
 
 % energy efficency
 
