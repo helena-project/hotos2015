@@ -63,14 +63,26 @@ MPUs do not, however, perform any translation, so mechanisms such as swap are un
 {\bf ``Multi-Core'' MCUs.}
 % XXX: This section is a work-in-progress...
 Modern embedded platforms increasingly include multiple microcontrollers.
-Often, peripheral devices like radio modules are actually a full blown
-microcontroller that allows the application controller to offload low-level radio
-functionality and reduce overall power~\cite{nrf51822,cc2540}. In other cases,
-a similar microcontroller with a different energy profile is added to provide
-a runtime option for an energy-performance tradeoff.  For example, the Nest
-Protect includes a main Cortex-M4 application controller, a secondary
-Cortex-M0+ peripheral processor and the EM357 802.15.4 radio SoC, which has an
-additional onboard Cortex-M3~\cite{nestprotect-teardown}.
+For example, the Nest
+Protect~\cite{nestprotect} includes a main Cortex-M4 application controller, a secondary
+Cortex-M0+ peripheral processor and an EM357 802.15.4 radio SoC with an
+onboard Cortex-M3~\cite{nestprotect-teardown}.
+Adding additional microcontrollers can allow for offloading timing-critical
+communication functionality or running certain computations on a microcontroller
+with a different energy profile.
+% Often, peripheral devices like radio modules are actually a full blown
+% microcontroller that allows the application controller to offload low-level radio
+% functionality and reduce overall power~\cite{nrf51822,cc2540}. In other cases,
+% a similar microcontroller with a different energy profile is added to provide
+% a runtime option for an energy-performance tradeoff.
+Multiple
+%, hetergeneous
+processors provide an opportunity for
+the strictest isolation, stochastic and deterministic real-time schedules, and
+computation offloading. It is less clear, however, how to abstract
+system-specific hardware for general applications and is an open question in
+the design of \name.
+
 
 % ARM TrustZone is also functionally like having a separate core, or at least
 % that's the abstraction it tries to provide. Only available on Cortex-A's
@@ -78,11 +90,7 @@ additional onboard Cortex-M3~\cite{nestprotect-teardown}.
 
 % Could also be interesting to talk about crypto co-processors here
 
-Systems with multiple, hetergeneous processors provide an opportunity for
-the strictest isolation, stochastic and deterministic real-time schedules, and
-computation offloading. It is less clear, however, how to abstract
-system-specific hardware for general applications and is an open question in
-the design of \name.
+
 
 %% OLD TEXT: impl-heavy
 % \name leverages multiprocessor environments to provide protection where
