@@ -49,7 +49,14 @@ Given the paradigm shift in embedded devices we propose a design for a new opera
 % \caption{Runnable life cycle.}
 %  \label{fig:appcycle}
 % \end{figure}
-
+It's is not sufficient for a modern operating system allowing multiple
+simultaneous applications only have an event driven or preemptive
+multi-threading. In traditional OS the applications are not interrupted for
+longer period of times and in most of the cases there is no competition for
+resources. Resources need to be fairly distributed and applications, services or
+drivers notified upon event that effects program flow. Critical events are
+initialization of the application, the device is going to or waking up from low
+power mode as well secondary event like interrupts, timer, radio etc.
 % left here for event-driven e.g. Sergio add
 
 \subsection{Loadable applications, services and drivers}
@@ -80,8 +87,8 @@ OS has to ensure that at most one driver has access to a specific hardware
  attacks by drivers. Multiple application on the embedded device also requires
  of to protect the kernel and other applications from malicious actions.
 
-%scheduling comming here
-While having these requirements 
+While requirements have resemblance to those of a traditional OS, modern
+embedded OS has to fulfill them with the computational and energy constrains. 
 
 % energy efficency
 
