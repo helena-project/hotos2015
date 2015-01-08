@@ -88,10 +88,10 @@ specific peripherals.
 \subsection{\name Memory Design in Detail}
 
 \begin{figure}
- \centering
-\includegraphics[width=1\columnwidth]{img/placeholder}
-\caption{Memory layout of \name.}
- \label{fig:memory-layout}
+% \centering
+%\includegraphics[width=1\columnwidth]{img/placeholder}
+%\caption{Memory layout of \name.}
+% \label{fig:memory-layout}
 \end{figure}
 
 Without virtual memory but the requirement of providing memory isolation
@@ -112,7 +112,7 @@ the code is backed by internal flash, which has limited write cycles.
 % that requires them over footnotes. They're much more annoying to read IMHO.
 {\bf Memory-Mapped I/O.}
 Hardware registers are typically located in a single, continuous region of the
-memory space.\footnote{The location of hardware memory registers and flash is
+memory space.~\endnote{The location of hardware memory registers and flash is
   determined by the chip manufacturer, however, chips chips typically place
   flash at the bottom of memory, followed by RAM, and peripheral memory
 registers towards the top of memory.}
