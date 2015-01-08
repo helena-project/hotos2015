@@ -8,7 +8,7 @@ stricter semantics \cite{singularity:sigops, house:icfp2005, unikernels:2013}.
 Type safety, memory safety, and strict aliasing each provide support for
 operating system protection at the language level.
 
-\textbf{Strong Type Safety.}
+\paragraph{Strong Type Safety.}
 Strong, strict types allow for abstractions of low-level hardware mechanisms
 that cannot be subverted by safe code. Because the type system cannot be
 subverted, hardware mechanisms correctly modeled as type values exposing typed interfaces
@@ -30,7 +30,7 @@ protection from a strong type system.
 % interface is a core challenge, but successfully doing so results in strong,
 % cost-free protection.
 
-\textbf{Memory Safety.}
+\paragraph{Memory Safety.}
 Issues with memory safety---dangling pointers, use-after-free and
 double-free errors, access to unallocated memory, and pointer arithmetic
 errors---have long plagued operating systems written in
@@ -71,7 +71,7 @@ the overall interface is memory safe, enabling both safe drivers and
 % while enabling
 the kernel's low-level implementation.
 
-\textbf{Strict Aliasing.}
+\paragraph{Strict Aliasing.}
 Strict aliasing rules, such as unique references and read/write references,
 %are used to
 enforce thread safety
