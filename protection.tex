@@ -34,26 +34,31 @@ As Cortex-M's are a microcontroller design---a System-on-Chip with tightly
 integrated memory---they do not (nor will they likely ever) integrate enough
 memory to merit a Memory Management Unit (MMU). Instead, the Cortex-M series
 includes a Memory Protection Unit (MPU), a lightweight, efficient construct
-that provides the same memory protection features (e.g. traps illegal memory
-accesses such as writing to read-only memory) as an MMU without address
-translatation.
-With OS assistance an MPU
-with position independent code (PIC) can enable isolated applications, shared
+that provides the memory protection features (e.g. traps illegal memory
+accesses such as writing to read-only memory) similar to those doung in an MMU
+but without address translatation and at a much finer granularity.
+With OS and compiler assistance~\endnote{Relocation requires an application to
+be compiled with position independent code} an MPU
+can enable isolated applications, shared
 libraries, and even possible relocation of running code.
 % Pat: I'm 90% sure of how to do relocation with PIC, but I need to think about it more
-Further, MPUs are typically much more fine-grained than
-virtual memory and are able to address regions as small a 32~bytes, whereas MMUs
-typically use at least 4~KB pages.
-MPUs do not, however, perform any translation, so mechanisms such as swap are unavailable.
+MPUs are much more fine-grained than typical virtual memory. MPUs are able to
+address regions as small a 32~bytes, whereas MMUs typically use at least 4~KB
+pages. Moreover, MPUs support regions of any size that is a power of two larger
+than 32 bytes (27 sizes in practice)~\cite{cortexm4-ug:ch4.5}, whereas MMUs
+support a limited number of page sizes~\endnote{The Itanium architecture
+supports eight page sizes, while x86 and ARMv7 both only support three}
+MPUs do not, however, perform any translation, so mechanisms such as swap and
+dynamic page allocation may not be feasible.
 
-{\bf ``Multi-Core'' MCUs.}
+{\bf Multi-Processor Platforms.}
 % XXX: This section is a work-in-progress...
 Modern embedded platforms increasingly include multiple microcontrollers.
 For example, the Nest
 Protect~\cite{nestprotect} includes a main Cortex-M4 application controller, a secondary
 Cortex-M0+ peripheral processor and an EM357 802.15.4 radio SoC with an
 onboard Cortex-M3~\cite{nestprotect-teardown}.
-Adding additional microcontrollers can allow for offloading timing-critical
+Adding additional microcontrollers can allow offloading timing-critical
 communication functionality or running certain computations on a microcontroller
 with a different energy profile.
 % Often, peripheral devices like radio modules are actually a full blown
