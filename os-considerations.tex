@@ -2,22 +2,27 @@
 \label{os-considerations}
 %\subsection{Evolved Embedded Applications}
 
-Embedded operating systems once shifted from monolithic applications to
-separate operating system and application code that are compiled to monolithic
-applications.
-Now, the operating system must shift again to support multiple and
+Embedded operating systems once shifted from monolithic applications to separate
+operating system and application code that are compiled to monolithic
+applications. Now, the operating system must shift again to support multiple and
 independently developed applications co-existing on the same device
 (Pebble~\cite{pebble} watch), and modular embedded devices
-(SimBand~\cite{simband}, Wzzard~\cite{wzzard}, ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq}).
-Traditional desktop and mobile operating systems, however, cannot simply be
-applied to the embedded domain. They assume virtual memory for protection and
-are not designed to take advantage of MPUs present in embedded hardware. They
-are not written in modern, safe systems languages and therefore must largely
-trust drivers. They do not provide a mechanism for granting applications
-arbitrary direct hardware access for performance or peripheral requirements
-purposes.  Lastly, they are designed for cooperative cores with shared memory,
+(SimBand~\cite{simband}, Wzzard~\cite{wzzard},
+ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq}).
+While traditional operating systems handle independently developed applications,
+they cannot simply be applied to the embedded domain. They assume virtual memory
+for protection and isolation and are not designed to take advantage of MPUs
+present in embedded hardware. They trust that drivers are written correctly,
+granting them full access to kernel structures and memory, and fail when bugs
+are present. Lastly, they are designed for cooperative cores with shared memory,
 rather than physically isolated microcontrollers with private memories.
 
+% They do not provide a mechanism for granting applications arbitrary direct
+% hardware access for performance or peripheral requirements purposes.
+%
+% Note: We won't either; they'll have to implement a platform or device driver
+% to access hardware directly. This is somewhat analogous to kernel modules,
+% which Linux provides, albeit that kernel modules are unsafe.
 
 % In the first evolutionary cycle of embedded devices, applications were written
 % as an integral part of the runtime environment on the device. The second
@@ -124,13 +129,20 @@ simple and safe means to add new drivers.
 
 \subsection{Robust, Reliable, Safe and Efficient}
 
-With resource sharing between applications and the end of exclusively trusted
-software on embedded devices comes the need for better protection guarantees
-from the operating system. The operating system must arbitrate and moderate
-access to hardware resources and protect kernel memory from misbehaving
-applications.  Further, embedded applications must continue to run without
-end-user intervention as there is often little recourse for users to detect
-and correct system error.
+
+[ This needs to be filled in. What should it be saying? ]
+
+Note: Are we comparing against desktop OSs or other embedded OSs? The intro
+to the this section assumes the former, but this paragraph discusses the
+latter.
+
+% With resource sharing between applications and the end of exclusively trusted
+% software on embedded devices comes the need for better protection guarantees
+% from the operating system. The operating system must arbitrate and moderate
+% access to hardware resources and protect kernel memory from misbehaving
+% applications.  Further, embedded applications must continue to run without
+% end-user intervention as there is often little recourse for users to detect
+% and correct system error.
 
 
 % % isolation incoming somewere here
