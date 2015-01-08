@@ -36,7 +36,14 @@ and turning interrupts on and off. A device driver runs with the same
 can only use the kernel provided hardware abstractions to access hardware, that
 dynamic memory allocation is limited to load time and stack allocation, and that
 drivers cannot interfere with each other by accidentally sharing underlying
-hardware resources.
+hardware resources. For example, the Rust language has a feature called
+``ownership`` (which originally appeared in the Cyclone language~\cite{cyclone})
+that ensures, at compile time, there is only one active reference to a
+value not marked copyable. In \name, we use this feature to give device drivers
+``ownership'' over hardware resources and ensure those resources are not a
+vector for race conditions between drivers. Moreover, \name relies on Rust's
+strong module boundries and type system to restrict device drivers from
+accessing unsafe internals of the hardware abstraction layer.
 
 The third layer, where applications run, is isolated using hardware protection
 mechanisms. Applications, which do not have to be written in Rust, run in an
@@ -44,9 +51,22 @@ unprivileged CPU mode that restricts access to privileged CPU and hardware
 registers, such as the control and program status CPU registers and the memory
 protection unit hardware registers. Applications can access hardware resources
 in two ways. First, through a system call interface exposed by the kernel and
-device drivers.  Second, the kernel can give an application direct read and/or
+device drivers.  Second, the kernel can give an applications direct read and/or
 write access to particular hardware registers.
 
+In cases where the platform has multiple microporcessors, \name can use
+additional CPUs to isolate applications at yet another layer. We envision that
+in multi-application embedded platforms, most applications will not be very
+sensitive to reasonable scheduling decisions, however some applications will
+undoubtedbly have timing constraints. \name will leverage multiple
+microprocessors by scheduling applications on the microprocessor with the most
+relevant hardware---for example, a communication bound application will be
+scheduled on a Bluetooth SoC. Moreover, some microprocessors on a platform will
+run instances of \name with a real-time scheduler. Finally, we plan to leverage
+physically separate microprocessors to protect applications dealing with
+particularly sensitive data (such as encryption keys, or end-user medical
+information) from side-channel attacks by running them on a separate
+processor~\cite{trustzone}.
 
 % \subsection{The Cortex-M MPU}
 % 
@@ -72,55 +92,62 @@ is virtual memory or segmentation. These mechanisms are inapproriate in an
 embedded system in several ways, not least of which that hardware support for
 such mechanisms is simply not available.
 
-Unlike desktop operating systems, microcontrollers with memory protection have
-no support for virtual addressing. As a result, any executing thread can attempt
-load and store operations to any address in memory, including sensitive kernel
-buffers or hardware memory registers. The memory protection unit (MPU) allows an
-operating system to protect sensitive memory regions from malicious or buggy
-applications by marking memory regions with read, write and execute permission.
-These permission take effect when the processor is in unprivileged mode.
-However, using access control instead of virtual memory for protection requires
-well behaved applications to know exactly where memory regions reside and which
-regions it has access to.
+On the other hand, new microporcessors do support memory protection, which
+unlike virtual memory, exposes a flat address space to applications and the
+kernel, but allows the kernel to set access control rules on memory regions as
+small as 32 bytes. \name explores one point of the design space of how to best
+layout kernel and application memory, design a system call interface and mediate
+access to hardware using an MPU.
 
-The operating system has roles with respect to application memory. First it
-manages where applications are allowed to allocate memory. Second it manages
-which memories the application can access. This includes most of the application
-allocated memory, but may also include hardware memory registers that are
-exposed directly to applications.
-
-{\bf Allocation Regions.} 
-In \name, the kernel allocates three separate memory regions for each
-application, one for each of the stack, heap and data sections. The stack and
-data sections are completely accessible to the application, and only the
-application can allocate memory there. On the other hand, the heap is shared
-between the application and the kernel, which \emph{borrows} heap memory from
-the application for things like buffers and queues which the kernel needs
-to satisfy application demands.
-
-{\bf Access Rules.}
-Naively, memory allocation rules would define memory access rules. For example,
-in \name, applications would have read and write access to their stack, heap and
-data regions and execute access to their code segments, while all other memory
-accesses would be mediated through the kernel via system calls. However, this
-approach has two main deficiencies:
+Figure~\ref{fig:memory-layout} shows the four types of memory regions in \name
+as well as the access rules when an application is running for those regions and
+subregions.
 
 \begin{enumerate}
-  \item The kernel must choose between dynamically allocating memory in response to
-  application requests in kernel memory or compromising on the integrity of
-  kernel data structures.
+  \item The {\bf code} region contains kernel, device driver and application
+    code. While an application is executing code, is has read and instruction
+    fetch access only to it's own code segment. It cannot read code for other
+    applications or the kernel since a compiler might inline sensitive constants
+    which could then appear in the code section. An application cannot write to
+    it's own code section since, in most cases, the code is backed by internal
+    flash, which has limited write cycles.
 
-  \item It needlessly increases the complexity of accessing hardware resources
-  that are common in embedded applications such as the GPIO.
+  \item {\bf Hardware memory registers} are typically located in a single,
+    continuous region of memory.~\endnote{the location of hardware memory
+      registers and flash is determined by the chip manufacturer, however, chips
+      chips typically place flash at the bottom of memory, followed by RAM, and
+    peripheral memory registers towards the top of memory.} \name may provide
+    read-only, or read-write access over small ranges of memory registers to
+    applications. For example, our development platform uses the Atmel SAM4L
+    Cortex-M4 which provides a true random number generator peripheral. The
+    relevant registers for reading a new random value are contained in an 20
+    byte range.  \name exposes random numbers directly to applications by allow
+    read-only access to a 32 byte containing the relevant registers (the tailing
+    12 bytes are innocuous).
+
+  \item The {\bf Kernel's stack and static data} are located at the top of RAM.
+    They include all kernel and device driver buffers and any local variables so
+    applications may not access the kernel stack in any way. The kernel does not
+    allocate memory dynamically except on the stack and inside application
+    memory regions, as discussed below. As a result, the kernel stack is the
+    only region dedicated to kernel memory.
+
+  \item \name allocates {\bf application memory} in the remaining space below
+    the kernel stack. Currently, \name allocates a continuous, fixed size region
+    for each application (our development platform has 64KB of RAM and we
+    currently use 2KB memory regions for applications, but this will likely vary
+    based on the requirements of each target platform). Application memory and
+    the kernel stack grow towards each other to provide the most flexibility in
+    number of applications vs. kernel stack size. If the kernel stack grows too
+    large, \name always prefers to terminate the application with the largest
+    memory region. An alternative memory allocation technique would be to
+    allocate application memory as requested from a shared heap (which is
+    possible due to the high granularity of the memory protection unit). We have
+    not yet explored the tradeoffs between these two strategies, but at a high
+    level, but fixed sized application memory regions makes it easier for the
+    kernel to reclaim stack space under memory pressure while a shared heap
+    provides heterogenously sized application with more flexibility.
 
 \end{enumerate}
 
-Instead, \name treats allocation and access control separately. Applications are
-given complete access (read and write) to their stack and data segments.
-However, the heap is divided between the kernel and application---the
-application heap grows up while the application-specific kernel heap grows down.
-The boundry between the two changes dynamically as memory is allocated to
-maximize utilization. In the case that an application heap is exhausted, either
-by the applicatoin itself or by the kernel, the application is terminated and
-restarted, without effect on the kernel.
-
+TODO: application internal memory structure
