@@ -33,10 +33,19 @@ new capabilities to our embedded OS concept.
 
 \subsection{Hardware Advances and Trends}
 
-Modern ARM devices come in three flavors: the powerful A-series
-microprocessors, the real-time R-series, and the efficient M-series
-microcontrollers.
-\hl{XXX: Why M over A}
+New embedded system platforms will be built on the Cortex-M series of microcontrollers.
+While ARM's A-series is substantially more capable and is used in wall-powered
+devices such as the Raspberry Pi~\cite{rpi} and BeagleBone Black~\cite{bbb},
+its significant power draw (over 1~W in active mode) make it infeasible for
+low-power, battery operated devices.
+In contrast, the Cortex-M series microcontrollers have power draws conducive
+to low-power operation while adding hardware features that enable protection.
+
+
+% Modern ARM devices come in three flavors: the powerful A-series
+% microprocessors, the real-time R-series, and the efficient M-series
+% microcontrollers.
+% \hl{XXX: Why M over A}
 
 {\bf Memory Protection Units.}
 In lieu of costly Memory Management Units (MMUs), the Cortex-M series includes
