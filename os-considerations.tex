@@ -2,22 +2,21 @@
 \label{os-considerations}
 %\subsection{Evolved Embedded Applications}
 
-Embedded operating systems have shifted from monolithic applications to
-separate OS and application code that are compiled to monolithic applications.
-Now, the operating system must shift again to support
-multiple and independently
-developed applications co-existing on the same device (Pebble~\cite{pebble} watch),
-and modular embedded devices
-% are becoming modular. The latter is evident with
-% multi-billion companies like Samsung, Telefonica and GE innovating with
+Embedded operating systems once shifted from monolithic applications to
+separate operating system and application code that are compiled to monolithic
+applications.
+Now, the operating system must shift again to support multiple and
+independently developed applications co-existing on the same device
+(Pebble~\cite{pebble} watch), and modular embedded devices
 (SimBand~\cite{simband}, Wzzard~\cite{wzzard}, ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq}).
-Traditional desktop and mobile operating systems, however, are not sufficient
-for the embedded domain. They require virtual memory and are not designed to
-take advantage of MPUs present in the hardware. They are not written in
-modern, safe systems languages and do not provide a mechanism for granting
-applications direct hardware access for performance or application requirements
-purposes. Further, they are not designed for physically isolated but cooperative
-cores.
+Traditional desktop and mobile operating systems, however, cannot simply be
+applied to the embedded domain. They assume virtual memory for protection and
+are not designed to take advantage of MPUs present in embedded hardware. They
+are not written in modern, safe systems languages and therefore must largely
+trust drivers. They do not provide a mechanism for granting applications
+arbitrary direct hardware access for performance or peripheral requirements
+purposes.  Lastly, they are designed for cooperative cores with shared memory,
+rather than physically isolated microcontrollers with private memories.
 
 
 % In the first evolutionary cycle of embedded devices, applications were written
@@ -53,11 +52,11 @@ cores.
 % protecting the application from malicious or malfunctioning applications and
 % peripherals.
 
-Given the paradigm shift in embedded devices and the inadequacy of current operating
-system solutions, we propose a design for a new operating system,
-\name, that supports a range of goals: an event-driven execution model,
-loadable applications, services, and drivers, and
-robustness, reliability, safety and efficiency.
+Given the paradigm shift in embedded devices and the inadequacy of current
+operating system solutions, we propose a design for a new operating system,
+\name, that supports a range of goals: an embedded-friendly execution model,
+loadable applications, services, and drivers, and an architecture that
+promotes robustness, reliability, safety and efficiency.
 
 
 
@@ -65,15 +64,16 @@ robustness, reliability, safety and efficiency.
 \subsection{Application Execution Model}
 \label{sec:os:execution}
 
-While traditional operating systems support a threaded application execution
-model, \name is based on an event-driven model. Event-driven better matches
-the need of embedded applications which typically wait and respond to
-events, e.g. timer firings, packet receptions, sensor interrupts, etc, and
-have bursty, instead of long-running, periods of computation. The lack of
-multiple cores on embedded microcontrollers also reduces the usefulness
-of threaded execution. Further, considering the resource constraints
-of microcontrollers, requiring applications to be designed in an event-based
-model reduces the complexity of executing multiple applications simultaneously.
+Most traditional operating systems support a sequential, threaded application
+execution model, whereas \name is based on an event-driven model. Event-driven
+better matches the needs of embedded applications which typically wait and
+respond to events, e.g. timer firings, packet receptions, sensor interrupts,
+and have bursty periods of computation rather than long-running operations.
+The absence of multiple shared-memory cores on embedded microcontrollers also
+reduces the usefulness of threaded execution. Further, considering the
+resource constraints of microcontrollers, restricting execution to a single
+thread reduces the complexity of system and application design.
+% Pat: I've improved, but still don't love this last sentence.
 
 
 % %% not sure if this figure is needed
@@ -100,9 +100,13 @@ model reduces the complexity of executing multiple applications simultaneously.
 % instead? I prefere the considerations so there is no overlapp and
 % inconsistencies in text
 
-A modern operating system for embedded devices has
-to support dynamically loading new applications, the services they require,
-and drivers when new peripherals are attached.
+A modern operating system for embedded devices must support dynamically
+loading new applications, the services they require, and drivers when new
+peripherals are attached.
+In embedded designs, new peripherals that require new custom drivers are
+frequently added by neither core operating system developers nor peripheral
+manufacturers. It is critical, then, that an operating system provide an
+simple and safe means to add new drivers.
 
 % to allow attache new
 % peripherals and load they drivers, start new services, and load/unload
@@ -122,10 +126,11 @@ and drivers when new peripherals are attached.
 
 With resource sharing between applications and the end of exclusively trusted
 software on embedded devices comes the need for better protection guarantees
-from the operating system. The OS must arbitrate and moderate access to
-hardware resources and protect kernel memory from misbehaving applications.
-Further, embedded applications must continue to run without end-user
-intervention as there is little recourse for users.
+from the operating system. The operating system must arbitrate and moderate
+access to hardware resources and protect kernel memory from misbehaving
+applications.  Further, embedded applications must continue to run without
+end-user intervention as there is often little recourse for users to detect
+and correct system error.
 
 
 % % isolation incoming somewere here
