@@ -2,69 +2,78 @@
 
 As networking became an integral part of computing through the Internet and
 world wide web, system security grew in importance from a niche interest of the
-military into a core requirement for every operating system and software
-application. Twenty years ago, we had to be careful about what floppy disks we
-inserted into our computers. Today, we have firewalls, NATs, automatic virus
-scanners, no-execute bits, virtual machines, increasing use of secure HTTP, and
-a growing infrastructure for authenticating downloaded data and code.
+military into a core requirement for operating systems. While far from perfect,
+today's general purpose operating systems support firewalls, NATs, encrypted
+networking~\cite{tcpcrypt}, no-execute bits, radomized memory allocation, and
+host of other security features. With the growth in network connected embedded
+devices, it is time for embedded operating systems to follow suit.
 
 Today, we see the emergence of ``intelligent'' \textit{things} that integrate
 computing with physical devices. Smart watches such as the Pebble~\cite{pebble}
 provide a clock application and a limited set of applets. Smart light bulbs such
 as the Phillips Hue~\cite{hue} support simple functions--- turn on, turn blue,
-glow brighter---, while smarter light bulbs such as the PLAYBULB~\cite{playbulb}
-pulse to the music playing from their integrated speaker.  As embedded systems
-grow from narrow applications into a more general purpose computing
-infrastructure, there will be a need to dynamically load applications and share
-the infrastructure across multiple applications.  This trend is already
-starting: the Pebble watch, for example, supports loading executable code that
-can use the built-in sensors and display as well as communicate with apps on a
-connected mobile phone.
+glow brighter---and personal fitness trackers like Fitbit and
+UP~\cite{fitbit,jawboneup} measure and track our steps, heartrate and sleep
+patterns. As embedded systems grow from narrow applications into a more general
+purpose computing platforms, there will be a need to dynamically load
+applications and share the hardware across multiple applications. In fact, This
+trend is already underway: the Pebble watch, for example, supports loading
+executable code that can use the built-in sensors and display as well as
+communicate with apps on a connected mobile phone.
 
 %on and off, brighter and dimmer---,
 
-But historically, embedded systems have been single-purpose, single-application
-devices.  A developer compiles a monolithic program image, combining the OS and
-its applications into one bundle that has total access to underlying hardware.
-We argue that this lack of a security model is in part due to the limitations of
-the hardware itself. Microcontroller families such as the MSP430 and Atmega lack
-virtual memory and memory protection.  As a result, embedded ``operating
-systems'' have no security mechanisms and applications must be trusted
-completely.
+Traditionally, embedded systems have been single-purpose, single-application
+devices. A developer compiles a monolithic application image which incorporates
+the OS and gives the application full access to underlying hardware.
+Historically, embedded software was co-designed with hardware---i.e. by the same
+people---and the underlying microcontrollers did not support different models.
+Microcontroller families such as the MSP430 and Atmega were extremely simple,
+lacking widely-used features in general-purpose processors such as virtual
+memory or segmentation. As a result, embedded ``operating systems'' have no
+security mechanisms and applications must be trusted completely.
 
-In the past few years however, a new generation of embedded processors has
-emerged. These processors, based on the ARM Cortex-M architecture, sit in a
-middle ground between full-fledged CPUs and microcontrollers. Like some
-mid-1980s processors, they have a 32-bit address space, memory protection, and
-run at tens of MHz. But like microcontrollers, they have tens to a few hundred
-of kilobytes of RAM, lack virtual memory, provide many peripherals and bus
-interconnects (SPI, I2C, one-wire, UART/USART, etc.), and have sub-\uA sleep
-currents necessary for battery-based operation. The Nordic Semiconductor
-nRF51822~\cite{nrf51822}, for example, is an integrated system-on-a-chip (SoC)
-with a Bluetooth Low Energy transceiver and a Cortex-M0 processor (16MHz, 32kB
-RAM, 256kB flash) and costs a little more than \$1.
+However, a new generation of processors has emerged in the past few years.
+These processors, based on the ARM Cortex-M architecture, sit in a middle ground
+between full-fledged CPUs and microcontrollers. Like some mid-1980s processors,
+they have a 32-bit address space, memory protection, and run at tens of MHz.
+Like microcontrollers, they have tens to a few hundred KB of RAM, provide many
+peripherals and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
+have sub-\uA sleep currents~\endnote{allowing them to operate on a battery for
+months or years}. The Atmel SAM4l~\cite{sam4l}, for example, is a
+microcontroller with a Cortex-M4 processor (40MHz, 64KB RAM, 512KB flash), a
+plethora of periherals (4 USARTs, 2 SPIs, 6 timers, native AES and random number
+generator, etc) and has a sleep current as low as $0.9$~\uA.
 
-The inclusion of memory protection is particularly significant: protection is
-the key abstraction absent in current embedded operating systems that will
-enable the next generation of embedded multi-application devices. Memory
-protection can isolate applications from one another and the kernel from
-applications. However, this isolation and safety is only as good as the kernel
-itself. As numerous recent results have shown, OS kernels contain scores of
-memory access bugs that applications can use to gain unauthorized
+Most importantly, this new generation of microcontrollers includes a feature
+called memory protection, which can protect kernel memory, memory mapped I/O
+from applications and application memory from other application. However, this
+isolation and safety is only as good as the kernel itself. As numerous recent
+results show, OS kernels contain scores of memory access bugs that applications
+can use to exploit to crash a system or gain unauthorized
 access~\cite{nickolai}. By writing the OS kernel in a type-safe, memory-safe
-language with strong semantics, we can curtail these types of vulnerabilities.
-The relative simplicity of Cortex-M processors and embedded operating system
-APIs means that writing such a kernel is a manageable task.
+language with strong semantics, we can eliminate whole classes of
+vulnerabilities. The relative simplicity of Cortex-M processors and embedded
+operating system APIs means that writing such a kernel is a manageable task.
+This makes an embedded OS a particularly interesting avenue for research in
+secure operating systems design.
 % still open to easy extension and evolution.
 
-It is time for embedded operating systems to graduate from a glorified hardware
-abstraction layer to a real operating system, one that enables and encourages
+It is time for embedded operating systems evolve! Today, embedded operatingy
+systems are libraries that ease software development. In this paper, we argue
+that the embedded operating system should be one that enables and encourages
 multiple concurrent, isolated applications, provides both hardware abstractions
 and low-level hardware access, and offers critical services to the applications
-of the Internet of Things. As a concrete example of what such an operating
-system might look like, we present \name, a new operating system that combines
-hardware-based memory protection and language-based safety to provide a secure,
-robust platform for embedded applications.
+of the Internet of Things. In particular, we discuss three protection
+mechanism---language level isolation, software mediated hardware protection and
+multiple isolated processors---we think operating systems should utilize to
+address these goals.
+
+%(alevy): I don't think we need this in the intro.
+%As a concrete example of what such an operating
+%system might look like, we present \name, a new operating system that combines
+%hardware-based memory protection and language-based safety to provide a secure,
+%robust platform for embedded applications.
 
 % Sergio's note: This isn't particularly difficult since we've already discussed
 % that the kernel and applications will be isolated by hardware. The language
