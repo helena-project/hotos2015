@@ -1,19 +1,21 @@
 \section{\name: a Secure Embedded OS}
 
-In our ongoing project, \name, we are building a new embedded operating system
+\name is a new embedded operating system
 specifically designed for platforms running multiple, potentially untrusted
 applications concurrently and third-party, contributed device drivers that are
 assumed to be buggy. \name uses three protection mechanisms to protect three
-different components in the operating system. The kernel itself is written in
-Rust, allowing \name to use language level protection, such as memory safety and
-ownership, to protect the core of the kernel (e.g. the scheduler and hardware
-abstraction layer) from contributed device drivers. \name uses software managed
-memory protection to isolate third-party applications from each other and the
-kernel. Finally, where available, multiple microcontrollers on the same platform
-are use to protect applications with timing constraints against starvation and
-in cases where timing and other side-channels are a concern. The remainder of
-this section gives an overview of the \name architecture and dives into \name's
-use of the memory protection unit and application memory layout.
+different components in the operating system.
+First, the kernel is written in Rust, a new systems language that provides
+compile-time memory safety and ownership, and uses the language to protect the
+core of the kernel (e.g. the scheduler and hardware abstraction layer) from
+contributed device drivers.
+Second, \name uses new Memory Protection Units (MPUs) to isolate third-party
+applications from each other and the kernel.
+Finally, where available, \name uses multiple microcontrollers to protect
+applications with timing concerns against starvation or leaking side-channel
+information.
+The remainder of this section gives an overview of the \name architecture,
+and aims to provide some intuition for importance and usage of an MPU.
 
 \subsection{Architecture}
 
