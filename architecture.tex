@@ -1,4 +1,5 @@
 \section{\name: a Secure Embedded OS}
+\label{sec:os}
 
 \name is a new embedded operating system
 specifically designed for platforms running multiple, potentially untrusted
@@ -18,57 +19,53 @@ The remainder of this section gives an overview of the \name architecture,
 and aims to provide some intuition for importance and usage of an MPU.
 
 \subsection{Architecture}
+\label{sec:os-arch}
 
-In traditional embedded operating systems, a single application is
-compiled along with a library operating system to a single executable that is
-loaded on to the target device. The application, device drivers, scheduler, and
-other OS services run with the same CPU privileges, share memory and have equal access
-to the same hardware resources. \name takes a radically different approach. In
-\name, there is a standalone, portable kernel that is composed, at compile-time,
-with approriate device drivers for the platform and enables dynamic loading of
-third-party applications at runtime.
+% Definitions:
+%  Tock core -- the kernel code shipped and provided with base Tock
+%  Tock kernel -- the final compiled kernel, including core and drivers
 
-At a high level, \name has three layers of computational units. At the lowest
-layer, the core of the kernel---the scheduler, task manager, hardware
-abstraction layer, etc---has completely control of the hardware, including
-memory-unsafe and thread-unsafe operations such as writing to arbitrary memory
-and turning interrupts on and off. A device driver runs with the same
-\emph{hardware} privileges as the core kernel but inside a compile time,
-\emph{language-level} sandbox. The language sandbox enforces that device drivers
-can only use the kernel provided hardware abstractions to access hardware, that
-dynamic memory allocation is limited to load time and stack allocation, and that
-drivers cannot interfere with each other by accidentally sharing underlying
-hardware resources. For example, the Rust language has a feature called
-``ownership`` (which originally appeared in the Cyclone language~\cite{cyclone})
-that ensures, at compile time, there is only one active reference to a
-value not marked copyable. In \name, we use this feature to give device drivers
-``ownership'' over hardware resources and ensure those resources are not a
-vector for race conditions between drivers. Moreover, \name relies on Rust's
-strong module boundries and type system to restrict device drivers from
-accessing unsafe internals of the hardware abstraction layer.
+Unlike traditional, monolithic embedded operating systems, \name generates a
+standalone, portable kernel that is composed of platform-specific drivers at
+compile-time and enables dynamic loading of third-party applications at
+runtime.
 
-The third layer, where applications run, is isolated using hardware protection
-mechanisms. Applications, which do not have to be written in Rust, run in an
-unprivileged CPU mode that restricts access to privileged CPU and hardware
-registers, such as the control and program status CPU registers and the memory
-protection unit hardware registers. Applications can access hardware resources
-in two ways. First, through a system call interface exposed by the kernel and
-device drivers.  Second, the kernel can give an applications direct read and/or
-write access to particular hardware registers.
+The \name core has complete system access, including arbitrary memory
+access and interrupt control. Device drivers are compiled into the kernel and
+run with the same \emph{hardware} privileges but inside a
+\emph{language-level} sandbox. This sandbox statically enforces that device
+drivers only use core-provided hardware interfaces, limits dynamic memory
+allocation to load time, and prevents uncoordinated access of underlying
+hardware resources.
 
-In cases where the platform has multiple microporcessors, \name can use
-additional CPUs to isolate applications at yet another layer. We envision that
-in multi-application embedded platforms, most applications will not be very
-sensitive to reasonable scheduling decisions, however some applications will
-undoubtedbly have timing constraints. \name will leverage multiple
-microprocessors by scheduling applications on the microprocessor with the most
-relevant hardware---for example, a communication bound application will be
-scheduled on a Bluetooth SoC. Moreover, some microprocessors on a platform will
-run instances of \name with a real-time scheduler. Finally, we plan to leverage
-physically separate microprocessors to protect applications dealing with
-particularly sensitive data (such as encryption keys, or end-user medical
-information) from side-channel attacks by running them on a separate
-processor~\cite{trustzone}.
+Applications are separated from the kernel by a syscall ABI and need not be
+written in Rust. Applications have an execution stack, an application memory
+heap, and a kernel memory heap. Kernel (and driver) dynamic allocations take
+place in the application memory space, thus charging applications for buffers
+the kernel creates on their behalf and ensuring that an out-of-memory
+condition terminates the application and does not cause a kernel error. The
+application kernel memory heap is protected from application access by the
+MPU.
+%
+The ABI provides access system hardware resources. For embedded applications,
+however, often direct access to a hardware peripheral is required.
+Applications can request direct ownership, in which case the kernel uses the
+MPU to grant the application access to the memory mapped I/O region of
+specific peripherals.
+
+% XXX: This paragraph needs work
+Scheduling in \name is an open question, particularly if it aims to capitalize
+on multi-MCU systems. Some assignments are clearer, a communication task
+should likely run on the same core as the radio controller. Applications
+that require hard real-time could run on a dedicated core with a real-time
+scheduler, but what if another core is not available? Technology such as
+TrustZone~\cite{trustzone}, a secure processing mode on the same physical
+core, provides protection for sensitive data, but not from side-channel
+attacks such as timing.
+% TrustZone is interesting, but currently only available on Cortex-A's, not
+% clear if there's any intention of bringing to M's. Maybe this though belongs
+% more in the HW section earlier?
+
 
 % \subsection{The Cortex-M MPU}
 % 
@@ -83,88 +80,71 @@ processor~\cite{trustzone}.
 % active regions. Finally, memory regions and protection bits can be changed
 % during exection, for example while context switching between applications.
 
-\subsection{OS Design Challenges}
-
-To design an operating system for today's embedded hardware running multiple
-untrusted applications concurrently we must rethink some of the core mechanisms
-used in modern operatingy systems for other environments (specifically, the
-desktop, mobile and server). For example, the main mechanism for isolating
-applications from each other and the kernel in modern desktop operating systems
-is virtual memory or segmentation. These mechanisms are inapproriate in an
-embedded system in several ways, not least of which that hardware support for
-such mechanisms is simply not available.
-
-On the other hand, new microporcessors do support memory protection, which
-unlike virtual memory, exposes a flat address space to applications and the
-kernel, but allows the kernel to set access control rules on memory regions as
-small as 32 bytes. \name explores one point of the design space of how to best
-layout kernel and application memory, design a system call interface and mediate
-access to hardware using an MPU.
+\subsection{\name Memory Design in Detail}
 
 Figure~\ref{fig:memory-layout} shows the four types of memory regions in \name
-as well as the access rules when an application is running for those regions and
-subregions.
+and the access rules during application execution.
 
-\begin{enumerate}
-  \item The {\bf code} region contains kernel, device driver and application
-    code. While an application is executing code, is has read and instruction
-    fetch access only to it's own code segment. It cannot read code for other
-    applications or the kernel since a compiler might inline sensitive constants
-    which could then appear in the code section. An application cannot write to
-    it's own code section since, in most cases, the code is backed by internal
-    flash, which has limited write cycles.
+{\bf Code.}
+The code region contains kernel and application code.  While an application is
+executing code, is has read and instruction fetch access only to its own code
+segment.  An application cannot write to it's own code section since, in most
+cases, the code is backed by internal flash, which has limited write cycles.
 
-  \item {\bf Hardware memory registers} are typically located in a single,
-    continuous region of memory.~\endnote{the location of hardware memory
-      registers and flash is determined by the chip manufacturer, however, chips
-      chips typically place flash at the bottom of memory, followed by RAM, and
-    peripheral memory registers towards the top of memory.} \name may provide
-    read-only, or read-write access over small ranges of memory registers to
-    applications. For example, our development platform uses the Atmel SAM4L
-    Cortex-M4 which provides a true random number generator peripheral. The
-    relevant registers for reading a new random value are contained in an 20
-    byte range.  \name exposes random numbers directly to applications by allow
-    read-only access to a 32 byte containing the relevant registers (the tailing
-    12 bytes are innocuous).
+% n.b. Why endnotes? I looked around the HotOS CFP, and couldn't find anything
+% that requires them over footnotes. They're much more annoying to read IMHO.
+{\bf Memory-Mapped I/O.}
+Hardware registers are typically located in a single, continuous region of
+memory.\footnote{The location of hardware memory registers and flash is
+  determined by the chip manufacturer, however, chips chips typically place
+  flash at the bottom of memory, followed by RAM, and peripheral memory
+registers towards the top of memory.}
+\name may provide read-only or read-write access over small ranges of memory
+registers to applications, bypassing the kernel for direct hardware access.
+For example, our development platform uses the Atmel SAM4L Cortex-M4 which
+provides a true random number generator peripheral. The registers for reading
+a new random value are contained in an 20~byte range.  \name exposes random
+numbers directly to applications by allowing read-only access to a 32~byte
+range covering these registers (the tailing 12 bytes are innocuous).
 
-  \item The {\bf Kernel's stack and static data} are located at the top of RAM.
-    They include all kernel and device driver buffers and any local variables so
-    applications may not access the kernel stack in any way. The kernel does not
-    allocate memory dynamically except on the stack and inside application
-    memory regions, as discussed below. As a result, the kernel stack is the
-    only region dedicated to kernel memory.
+{\bf Kernel Stack and Static Data.}
+This section includes all kernel and device driver buffers and any local
+variables such that applications may not access the kernel stack in any way.
+The kernel does not allocate memory dynamically except on the stack and inside
+application memory regions.
+%As a result, the kernel stack is the only region dedicated to kernel memory.
 
-  \item \name allocates {\bf application memory} in the remaining space below
-    the kernel stack. Currently, \name allocates a continuous, fixed size region
-    for each application (our development platform has 64KB of RAM and we
-    currently use 2KB memory regions for applications, but this will likely vary
-    based on the requirements of each target platform). Application memory and
-    the kernel stack grow towards each other to provide the most flexibility in
-    number of applications vs. kernel stack size. If the kernel stack grows too
-    large, \name always prefers to terminate the application with the largest
-    memory region. An alternative memory allocation technique would be to
-    allocate application memory as requested from a shared heap (which is
-    possible due to the high granularity of the memory protection unit). We have
-    not yet explored the tradeoffs between these two strategies, but at a high
-    level, but fixed sized application memory regions makes it easier for the
-    kernel to reclaim stack space under memory pressure while a shared heap
-    provides heterogenously sized application with more flexibility.
+{\bf Application Memory.}
+Currently, \name allocates a continuous, fixed size region for each
+application.
+%(our development platform has 64KB of RAM and we currently use 2KB
+%memory regions for applications, but this will likely vary based on the
+%requirements of each target platform).
+Application memory and the kernel stack grow towards each other to maximize
+flexibility in application count versus kernel stack size. If the kernel stack
+grows too large, \name terminates the application with the
+largest memory region. One alternative memory allocation technique could
+allocate application memory as requested from a shared heap, leveraging the
+high granularity of the MPU. We have not yet explored the tradeoffs between
+these two strategies, but at a high level fixed sized application memory
+regions make it easier for the kernel to reclaim stack space under memory
+pressure while a shared heap provides heterogenously sized application with
+more flexibility.
 
-\end{enumerate}
-
-An application's memory region is not entirely it's own. Most of it's memory
-used for it's stack and static variables (at the bottom), and heap. However, the
-kernel may also ``borrow'' memory from the top of an application's memory region
-for application-specific kernel data structures. This region, which may change
-in size, is \emph{inside} the application's memory space, but is marked as read
-and write protected when the application is running. Therefore, the kernel, or device
-drivers, can allocate memory dynamically in response to application without
-sacrificing the reliability of never dynamically allocating in the kernel itself
-and while mainting integrety and confidentiality of shared kernel data
-structures. For example, when an application registers to a timer callback, the
-timer device driver adds the request to it's list of pending timers by
-allocating the new list node to in the application's memory. Since the link includes
-forward and backward list pointers, it's imperative that despite being in the
-application's memory, this link's integrity be maintained. Moreover, the values
-of the links might leak information about other applications.
+An application's memory region is not entirely its own. Most of its memory is
+used for its stack and static variables (at the bottom), and heap. However,
+the kernel may also ``borrow'' memory from the top of an application's memory
+region for application-specific kernel data structures. This region, which may
+change in size, is \emph{inside} the application's memory space, but is marked
+as read and write protected when the application is running. Therefore, the
+kernel, or device drivers, can allocate memory dynamically in response to
+application without sacrificing the reliability of never dynamically
+allocating in the kernel itself and while mainting integrety and
+confidentiality of shared kernel data structures. For example, when an
+application registers callback for a timer, the timer device driver adds the
+request to its list of pending timers by allocating the new list node in the
+application's memory. Since the link includes forward and backward list
+pointers, it is imperative that despite being in the application's memory,
+this link's integrity be maintained. Moreover, the values of the links might
+leak information about other applications.
 
