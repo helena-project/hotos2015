@@ -2,18 +2,20 @@
 
 As networking became an integral part of computing through the Internet and
 world wide web, system security grew in importance from a niche interest
-of the military into a core requirement for every operating system and 
+of the military into a core requirement for every operating system and
 software application. Twenty years ago, we had to be careful about what
 floppy disks we inserted into our computers. Today, we have firewalls,
-NATs, automatic virus scanners, no-execute bits, virtual machines, 
-increasing use of secure HTTP, and and a growing infrastructure for 
+NATs, automatic virus scanners, no-execute bits, virtual machines,
+increasing use of secure HTTP, and and a growing infrastructure for
 authenticating downloaded data and code.
 
 Today, we see the emergence of ``intelligent'' things that integrate
-computing with physical devices. Smart watches such as the Pebble
+computing with physical devices. Smart watches such as the Pebble~\cite{pebble}
 provide a clock application and a limited set of applets, smart light
-bulbs such as the Phillips Hue support single functions---on and off,
-brighter and dimmer---, while smarter light bulbs such as the PLAYBULB
+bulbs such as the Phillips Hue~\cite{hue} support simple functions---
+turn on, turn blue, glow brighter---,
+%on and off, brighter and dimmer---,
+while smarter light bulbs such as the PLAYBULB~\cite{playbulb}
 pulse with the music they play from their integrated speaker.  As
 embedded systems grow from narrow applications into a more general
 purpose computing infrastructure, there will be a need to dynamically
@@ -25,7 +27,7 @@ mobile phone.
 
 Historically, embedded systems have been single-purpose,
 single-application devices.  A developer compiles a monolithic program
-image combining OS and application that has total access to
+image combining the OS and application that has total access to
 underlying hardware.  This lack of a security model is due to the
 limitations of the hardware itself. Microcontroller families such as
 the MSP430 and Atmega lack virtual memory and memory protection.  As a
@@ -33,40 +35,40 @@ result, embedded ``operating systems'' have no security mechanisms and
 applications must be trusted completely.
 
 But in the past few years, a new generation of embedded processors
-has emerged. These processors, based on the ARM Cortex M architecture,
+has emerged. These processors, based on the ARM Cortex-M architecture,
 sit in a middle ground between full-fledged CPUs and microcontrollers.
 Like some mid-1980s processors, they are 32 bits, have memory protection, and
-run at tends of MHz. But like microcontrollers, they have tens to
+run at tens of MHz. But like microcontrollers, they have tens to
 a few hundred of kilobytes of RAM, lack virtual memory,
 provide the many peripherals
 and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) that embedded
-systems need and 
+systems need, and
 have sub-\uA sleep currents necessary for battery-based operation.
-The Nordic Semiconductor nRF51822, for example,
-is an integrated system-on-a-chip (SoC) with a Bluetooth Low Energy 
-transceiver and a Cortex M0 processor (16MHz, 32kB RAM, 256kB flash)
-costs a little more than \$1. 
+The Nordic Semiconductor nRF51822~\cite{nrf51822}, for example,
+is an integrated system-on-a-chip (SoC) with a Bluetooth Low Energy
+transceiver and a Cortex-M0 processor (16MHz, 32kB RAM, 256kB flash) and
+costs a little more than \$1.
 
 While these new embedded processors have slighly more RAM and run slightly
-faster than microcontrollers, we argue that their inclusion of memory 
-protection is far more significant. Protection is the key abstraction that 
+faster than microcontrollers, we argue that their inclusion of memory
+protection is far more significant. Protection is the key abstraction that
 current embedded operating
 systems lack but which is essential to enable the next generation
-of embedded multi-application devices. Memory protection can isolate 
+of embedded multi-application devices. Memory protection can isolate
 applications from one another and the kernel from applications. However,
 this isolation and safety is only as good as the kernel itself. As numerous
 recent results have shown, OS kernels contain scores of memory access
-bugs that 
+bugs that
 applications can use to gain unauthorized access~\cite{nickolai}. We can
 take protection one step further by writing the OS kernel in a type-safe
 language.  The
-relative simplicity of Cortex M processors and embedded operating system
-APIs means that writing such a kernel is a small and manageable task,
-still open to easy extension and evolution.
+relative simplicity of Cortex-M processors and embedded operating system
+APIs means that writing such a kernel is a small and manageable task.
+% still open to easy extension and evolution.
 
-This paper argues that it is time for embedded operating systems to graduate 
-from  a glorified 
-hardware abstraction layer to a real operating system, 
+This paper argues that it is time for embedded operating systems to graduate
+from  a glorified
+hardware abstraction layer to a real operating system,
 one that enables and encourages multiple concurrent, isolated applications,
 provides both hardware abstractions and low-level hardware access, and offers
 critical services for the applications of the Internet of Things.

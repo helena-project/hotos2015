@@ -33,34 +33,56 @@ new capabilities to our embedded OS concept.
 
 \subsection{Hardware Advances and Trends}
 
-Modern ARM devices come in three flavors: the powerful A-series
-microprocessors, the real-time R-series, and the efficient M-series
-microcontrollers.
-\hl{XXX: Why M over A}
+New embedded system platforms will be built on the Cortex-M series of microcontrollers.
+While ARM's A-series is substantially more capable and is used in wall-powered
+devices such as the Raspberry Pi~\cite{rpi} and BeagleBone Black~\cite{bbb},
+its significant power draw (over 1~W in active mode) make it infeasible for
+low-power, battery operated devices.
+In contrast, the Cortex-M series microcontrollers have power draws conducive
+to low-power operation while adding hardware features that enable protection.
+
+
+% Modern ARM devices come in three flavors: the powerful A-series
+% microprocessors, the real-time R-series, and the efficient M-series
+% microcontrollers.
+% \hl{XXX: Why M over A}
 
 {\bf Memory Protection Units.}
 In lieu of costly Memory Management Units (MMUs), the Cortex-M series includes
 a Memory Protection Unit (MPU). Like MMUs, MPUs trap illegal memory accesses
-(e.g. writing to read-only memory). MPUs do not perform any translation, so
-mechanisms such as swap are unavailable. With OS assistance, however, an MPU
+(e.g. writing to read-only memory).
+With OS assistance an MPU
 with position independent code (PIC) can enable isolated applications, shared
 libraries, and even possible relocation of running code.
 % Pat: I'm 90% sure of how to do relocation with PIC, but I need to think about it more
-MPUs are also interesting as they are typically much more fine-grained than
-virtual memory, able to address regions as small a 32~bytes whereas MMUs
-typically divide memory into pages of at least 4~KB.
+Further, MPUs are typically much more fine-grained than
+virtual memory and are able to address regions as small a 32~bytes, whereas MMUs
+typically use at least 4~KB pages.
+MPUs do not, however, perform any translation, so mechanisms such as swap are unavailable.
 
 {\bf ``Multi-Core'' MCUs.}
 % XXX: This section is a work-in-progress...
 Modern embedded platforms increasingly include multiple microcontrollers.
-Often, peripheral devices like radio modules are actually a full blown
-microcontroller that allows the application controller to offload low-level radio
-functionality and reduce overall power~\cite{nrf51822,cc2540}. In other cases,
-a similar microcontroller with a different energy profile is added to provide
-a runtime option for an energy-performance tradeoff.  For example, the Nest
-Protect includes a main Cortex-M4 application controller, a secondary
-Cortex-M0+ peripheral processor and the EM357 802.15.4 radio SoC, which has an
-additional onboard Cortex-M3~\cite{nestprotect-teardown}.
+For example, the Nest
+Protect~\cite{nestprotect} includes a main Cortex-M4 application controller, a secondary
+Cortex-M0+ peripheral processor and an EM357 802.15.4 radio SoC with an
+onboard Cortex-M3~\cite{nestprotect-teardown}.
+Adding additional microcontrollers can allow for offloading timing-critical
+communication functionality or running certain computations on a microcontroller
+with a different energy profile.
+% Often, peripheral devices like radio modules are actually a full blown
+% microcontroller that allows the application controller to offload low-level radio
+% functionality and reduce overall power~\cite{nrf51822,cc2540}. In other cases,
+% a similar microcontroller with a different energy profile is added to provide
+% a runtime option for an energy-performance tradeoff.
+Multiple
+%, hetergeneous
+processors provide an opportunity for
+the strictest isolation, stochastic and deterministic real-time schedules, and
+computation offloading. It is less clear, however, how to abstract
+system-specific hardware for general applications and is an open question in
+the design of \name.
+
 
 % ARM TrustZone is also functionally like having a separate core, or at least
 % that's the abstraction it tries to provide. Only available on Cortex-A's
@@ -68,11 +90,7 @@ additional onboard Cortex-M3~\cite{nestprotect-teardown}.
 
 % Could also be interesting to talk about crypto co-processors here
 
-Systems with multiple, hetergeneous processors provide an opportunity for
-the strictest isolation, stochastic and deterministic real-time schedules, and
-computation offloading. It is less clear, however, how to abstract
-system-specific hardware for general applications and is an open question in
-the design of \name.
+
 
 %% OLD TEXT: impl-heavy
 % \name leverages multiprocessor environments to provide protection where
