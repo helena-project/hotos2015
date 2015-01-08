@@ -50,14 +50,15 @@ to low-power operation while adding hardware features that enable protection.
 {\bf Memory Protection Units.}
 In lieu of costly Memory Management Units (MMUs), the Cortex-M series includes
 a Memory Protection Unit (MPU). Like MMUs, MPUs trap illegal memory accesses
-(e.g. writing to read-only memory). MPUs do not perform any translation, so
-mechanisms such as swap are unavailable. With OS assistance, however, an MPU
+(e.g. writing to read-only memory).
+With OS assistance an MPU
 with position independent code (PIC) can enable isolated applications, shared
 libraries, and even possible relocation of running code.
 % Pat: I'm 90% sure of how to do relocation with PIC, but I need to think about it more
-MPUs are also interesting as they are typically much more fine-grained than
-virtual memory, able to address regions as small a 32~bytes whereas MMUs
-typically divide memory into pages of at least 4~KB.
+Further, MPUs are typically much more fine-grained than
+virtual memory and are able to address regions as small a 32~bytes, whereas MMUs
+typically use at least 4~KB pages.
+MPUs do not, however, perform any translation, so mechanisms such as swap are unavailable.
 
 {\bf ``Multi-Core'' MCUs.}
 % XXX: This section is a work-in-progress...
