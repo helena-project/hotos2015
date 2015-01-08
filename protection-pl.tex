@@ -1,43 +1,79 @@
 \subsection{Language Level Protection}
 
-Embedded operating systems, like their desktop and server counterparts, have
-traditionally been developed using C, or C-derived languages. These languages
-lack many protection features of more modern systems languages---memory and
-thread safety, a strongly enforced module system---and are inapproriate for
-sandboxing untrusted linked code. This has meant that, while device drivers are
-often contributed by external developers, likely receive less attention than the
-core kernel code and are most likely to contain security vulnerabilities, they
-run with the same privileges as core kernel modules, like the scheduler. This
-problem is particularly salient in embedded systems frameworks like Arduino,
-where platforms are often constructed by cobbling various device ``shields''
-together and downloading or copy-pasting device driver code. While recent server
-operating systems utilize hardware I/O virtualization~\cite{arrakis:osdi2014,
-ix:osdi2014} to run device drivers outside the kernel, such hardware mechanisms
-are unlikely to be available in microcontrollers in the foreseeable future.
+The C programming language has long been the language of choice for system-level
+programming, including operating systems development. C is inherently an unsafe
+programming language \cite{kint:osdi2012, undefined:apsys2012}. As such, much
+effort has been made to develop operating systems in high-level languages with
+stricter semantics \cite{singularity:sigops, house:icfp2005, unikernels:2013}.
+Type safety, memory safety, and strict aliasing each provide support for
+operating system protection at the language level.
 
-\name is written in Rust: a type-safe, thread-safe, compiled, low-level systems
-language. Using a language with strong safety protections enables \name to
-enforce the separation between core kernel code and contributed device
-drivers, which are traditionally where most bugs are found but are included in
-the kernel for performance and practical reasons. Moreover, resource sharing
-between drivers (e.g. of communication busses) must be done {\bf explicitly}, and
-by default, the type system ensures concurrency bugs are limited to a single
-device driver (i.e. a device driver can send the wrong command to a flash
-storage device but cannot send a command to a radio module sharing the same SPI
-bus). In particular, \name uses two features of Rust to sandbox device drivers.
+\textbf{Strong Type Safety.}
+Strong, strict types allow for abstractions of low-level hardware machanisms
+that cannot be subverted by safe code. Because the type system cannot be
+subverted, hardware mechanisms modeled as type values exposing typed interfaces
+guarantee that users of the interface are utilizing the underlying hardware in a
+safe manner. Of course, the underlying interface implementation continues to be
+responsible for implementing the desired logic correctly. As such, it is
+important to design interfaces that minimize the ability for logic errors to be
+introduced via their implementation. We argue that through careful interface
+design, unsafe code, or code that interfaces with the hardware directly, can be
+minimized, reducing the amount of code that must be audited to ensure
+correctness. Identifying the minimum amount of unsafe code to expose a safe
+interface is a core challenge, but successfully doing so results in strong,
+cost-free protection.
 
-\begin{enumerate}
-  \item Devices drivers are compiled with a safe subset of the Rust language
-  (enforced by a compiler flag), preventing device drivers from maliciously, or
-  inadvertedly subverting the type or module system.
+\textbf{Memory Safety.}
+Issues with memory safety have long plagued operating systems written in
+languages with weak memory semantics. Dangling pointers, use-after-free and
+double-free errors, access to unallocated memory, and pointer arithmetic errors
+are a few of the issues kernel developers encounter when writing in such a
+language. A language that guarantees memory safety ensures that some or all of
+these types of errors cannot occur once a program has compiled.
 
-  \item Underlying hardware resources such as SPI controllers, timers, etc, are
-    modeled as typed values in Rust. \name uses Rust's move semantics to ensure
-    no two device drivers have a reference to the same underlying hardware
-    resource. Virtualized resources (e.g. a SPI master controlling multiple SPI
-    slaves) must be modeled explicitly, with a separate value for each virtual
-    resource. This prevents a class of bugs that could result from concurrent
-    access to hardware resources by different device drivers.
+A memory safe application can only access memory that has been allocated to it.
+This means that a kernel with drivers written in a memory safe language are
+memory isolated without the need for hardware support: It is impossible for a
+memory-safe driver to sully the integrity of a kernel written in the same
+language.
 
-\end{enumerate} 
+% A high-level language usually guarantees memory safety through automatic garbage
+% collection and bounds checking; the language allocates and frees all memory for
+% the user and checks all pointer arithmetic. Because the garbage collector tracks
+% active references, automatic garbage collection imposes a runtime performance
+% penalty that is difficult to determine deterministically. In a constrained
+% system, where applications may require tight bounds on their execution,
+% deterministic performance is critical. As such, automatic garbage collection is
+% unlikely to be a good fit for embedded systems.
 
+Of course, to program hardware, the kernel must be able to access memory
+directly. As with type safe interfaces, the ideal is to provide a memory safe
+interface to carefully audited memory unsafe operations. This guarantees the
+memory safety of software utilizing the memory safe interfaces, such as drivers,
+while enabling the kernel's low-level implementation.
+
+\textbf{Strict Aliasing.}
+Strict aliasing rules, such as unique references and read/write references, are
+used to enforce thread safety in modern programming languages. We seek to
+exploit these semantics to provide thread-safe hardware access by modeling
+hardware resources as references. In this way, two or more applications can run
+concurrently without fear of race conditions when accessing hardware.
+
+% This means that two or more concurrently running applications may
+% attempt to access the same hardware, resulting in access patterns unanticipated
+% by the hardware. We seek to exploit strict aliasing semantics, such as unique
+% and read/write references, by modeling hardware resources as references,
+% guaranteeing thread-safe hardware access.
+
+\textit{Unique references} guarantee that only a single active execution context
+can access the reference. By modeling hardware as a unique reference, a
+guarantee of thread safety can be made to applications holding the reference.
+\textit{Read/write references} guarantee that two active contexts cannot mutate
+the same state. If two or more applications require read access to the same
+resource, read/write references can be used to make the same guarantee. If two
+or more application require write access to the same resource, a broker with a
+unique reference to the resource can mediate access to said resource.
+
+By composing type safety, memory safety, and strict aliasing, a next-generation
+operating system can expose safe interfaces to applications and device drivers
+with strong protection guarantees at little performance cost.
