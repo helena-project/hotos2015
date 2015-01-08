@@ -2,12 +2,12 @@
 \label{os-considerations}
 %\subsection{Evolved Embedded Applications}
 
-In a first evolutionary cycle of the embedded devices applications were written
-as a essential part of a runtime environment on the device. During secondary
-cycle operating systems like TinyOS, Contiki, FreeRTOS emerged separating
-application and OS spaces. The development became easier  and applications
-got complex but the resulting code was still compiled to a monolithic image and
-uploaded to the device.
+In a first evolutionary cycle of the embedded devices, applications were written
+as a integral part of a runtime environment on the device. Second
+cycle brought operating systems like TinyOS, Contiki, FreeRTOS and
+separated application and OS spaces. The development became easier allowing
+complexity of applications to grow. However, the resulting
+code was still compiled to a monolithic image and uploaded to the device.
 
 Now the third evolutionary cycle is emerging: multiple and independently
 developed application has to co-exist on the same device (like in Pebble watch);
@@ -52,6 +52,9 @@ Given the paradigm shift in embedded devices we design new operating system
 
 
 \subsection{Loadable applications, services and drivers}
+% should we talk about what tock does or jsut focut on the new generations of
+% os instead? I prefere the considerations so there is no overlapp and
+% inconsistencies in text
 
 \name provides a system-call interface. This
 allows developers to write applications in any language that can support the
@@ -59,7 +62,7 @@ ABI. For example, the \name kernel is written in Rust~\cite{rust}, applications
 can trivially written in C, and we are working on a port of Lua~\cite{lua}.
 
 \subsection{Robust, Reliable and Safe}
-%tobe rewriten
+%to be rewriten
  \name follows previous operating systems in separating
 drivers for core peripherals (SPI, USART, GPIO, etc) and device drivers (radio,
 flash, etc) into separate layers. \name differs from previous operating systems
@@ -89,5 +92,5 @@ a strong language type system.
 
 
 \subsection{Scheduling}
-
+% this is important part but how much place we have to talk about it.
 
