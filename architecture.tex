@@ -123,14 +123,14 @@ the code is backed by internal flash, which has limited write cycles.
 {\bf Memory-Mapped I/O.}
 Hardware registers are typically located in a single, continuous region of the
 memory space.\footnote{The location of hardware memory registers and flash is
-determined by the chip manufacturer, however, chips chips typically place
-flash at the bottom of memory, followed by RAM, and peripheral memory
-registers towards the top of memory.} \name may provide read-only or read-write
-access over small ranges of memory registers to applications, bypassing the
-kernel for direct hardware access. For example, our development platform uses
-the Atmel SAM4L Cortex-M4~\cite{sam4l} which provides a true random number
-generator (TRNG) peripheral. \name exposes random numbers directly to
-applications by allowing read-only access to wthe TRNG registers.
+determined by the chip manufacturer, however, chips typically place flash at
+the bottom of memory, followed by RAM, and peripheral memory registers towards
+the top of memory.} \name may provide read-only or read-write access over small
+ranges of memory registers to applications, bypassing the kernel for direct
+hardware access. For example, our development platform uses the Atmel SAM4L
+Cortex-M4~\cite{sam4l} which provides a true random number generator (TRNG)
+peripheral. \name exposes random numbers directly to applications by allowing
+read-only access to wthe TRNG registers.
 
 {\bf Kernel Stack and Static Data.}
 This section includes all kernel and device driver memory, including local
