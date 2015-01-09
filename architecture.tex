@@ -96,7 +96,7 @@ timer or sensor interrupt) and issue commands (e.g. send a packet over the
 radio). Applications run in a single thread and will not be interrupted by event
 callbacks until either invoking the {\tt wait} system call, or returning from
 {\tt init} (which is an implicit {\tt wait}). Once an application has issued the
-{\tt wait} system call, the kernel suspends it until a relevent event has fired,
+{\tt wait} system call, the kernel suspends it until a relevant event has fired,
 and a callback can be invoked. Finally, the kernel invokes callbacks by pushing
 an additional stack frame onto the application's stack and jumping to the
 callback function. Thus, when a callback function returns, execution is resumed
@@ -119,13 +119,13 @@ where the {\tt wait} system call was invoked.
 \subsection{\name Memory Design in Detail}
 \label{sec:arch:memory-design}
 
-One major challenge in Tock is defining a memory management design
+One major challenge in \name is defining a memory management design
 that allows untrusted application code 
 to interact with a type-safe Rust kernel, for the kernel to be able to
 issue event upcalls to the application, for device driver isolation, and 
 for applications to directly
-acccess hardware. To achieve this
-Tock defines four types of memory regions: code regions, 
+access hardware. To achieve this
+\name defines four types of memory regions: code regions, 
 memory-mapped I/O regions,
 kernel stack and static data regions and application regions.
 \Cref{fig:memory-layout} shows these regions and their access rules from
@@ -174,7 +174,7 @@ section.
 \name allocates a continuous, fixed size region for each application.
 Application memory and the kernel stack grow towards each other to balance
 application count with kernel stack size. If the kernel stack grows too large,
-\name terminates the application whos memory region is closest to the kernel
+\name terminates the application whose memory region is closest to the kernel
 stack. Thus, applications with higher priority should be allocated memory
 regions at lower memory addresses. We intend to explore an alternate strategy of
 allocating application memory from a shared heap using the high granularity of
