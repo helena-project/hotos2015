@@ -11,23 +11,8 @@ minuscule sleep currents, and constrained battery life. Existing embedded operat
 have provided support for these properties and constraints. Providing support for concurrent, isolated
 applications, as traditional operating systems do, provides a different set
 of goals and challenges.
-% %On the other hand,
-% Applications for embedded systems
-% are categorized by their
-% % have not become more like their
-% % general-purpose counterparts. Specifically, applications are still primarily
-% event-driven nature with short bursts of computation rather than long-running or
-% user-interactive. Moreover, embedded sleep currents and battery capacity have not
-% improved significantly over the past decade.
-% % so next-generation embedded systems
-% % are still concerned with minimizing power consumption. 
-% As a result, embedded
-% systems are evolving to have requirements decendent from both previous embedded
-% systems and general-purpose systems.
-% The juxtaposition of these requirements
-% carves a unique design space in operating systems research.
-Juxtaposing these requirements and constraints drives the design considerations
-for new embedded operating system design.
+We argue that these these requirements and constraints create a new design space
+for operating systems research.
 
 
 % They do not provide a mechanism for granting applications arbitrary direct
@@ -73,52 +58,40 @@ for new embedded operating system design.
 \subsection{General-Purpose Requirements}
 
 In traditional embedded systems, application code is completely trusted with
-full access to all hardware resources.
-Applications written and controlled by a single developer make this reasonable.
-% This is reasonable because applications
-% were not written by third-parties and were typically not updated by end-users.
-However, new embedded devices, like Pebble,
-allow third-party applications and the end-user to dynamically load
-applications from an app store.
-A modern operating system for embedded devices must support loading applications
-dynamically by the end-user. It must also protect the hardware and
-kernel from these applications and applications from one another.
-Modern general-purpose operating systems use hardware features such as
-virtual memory and hardware virtualization to isolate applications. While these
-features are not available in embedded microcontrollers, embedded operating
-systems must use the tools at their disposal to achieve similar goals.
+full access to all hardware resources.  When a single developer both writes the
+application and designs the hardware, this design is reasonable.  However, new
+embedded devices run third-party applications and allow the end-user to dynamically
+load applications from app stores.  A modern operating system for embedded
+devices must support loading applications dynamically by the end-user. It must
+also protect the hardware and kernel from these applications and applications
+from one another.  Modern general-purpose operating systems use hardware
+features such as virtual memory and hardware virtualization to isolate
+applications. While these features are not available in embedded
+microcontrollers, embedded operating systems must use the tools at their
+disposal to achieve similar goals.
 
 \subsection{Embedded Requirements}
 \label{sec:os:execution}
 
-While attractive from a compatibility and bootstrapping perspective,
-porting general-purpose operating systems, like Linux, to microcontrollers is
-not the best solution. First, embedded systems today are still bound by power
-and battery constraints.
-% Many such embedded devices are battery powered and,
-% while microcontrollers have become more featureful, they do not consume less
-% power than previous generations. 
-Second, embedded applications are
-significantly different than applications on general-purpose systems. Embedded
-applications are event-driven, responding to timers, packet arrival, sensor
-interrupts, etc., with short bursts of computation. General-purpose
-applications typically use
+While attractive from a compatibility and bootstrapping perspective, porting
+general-purpose operating systems, like Linux, to microcontrollers is not the
+best solution. First, embedded systems today are still bound by power and
+battery constraints.  Second, embedded applications are significantly different
+than applications on general-purpose systems. Embedded applications are
+event-driven, responding to timers, packet arrival, sensor interrupts, etc.,
+with short bursts of computation. General-purpose applications typically use
 threaded execution, which may include long-running computations or latency
-sensitive user interactions. General-purpose system support for
-event-driven models has largely focused on
-latency, throughput, and scalability~\cite{epoll,libasync,ninja}, rather than
-power draw, which is typically more important in embedded devices.
-Finally, embedded applications often require direct access to underlying
-hardware resources. Traditional memory protection or 
-% Some general-purpose operating systems have attempted to
-% make dynamically loaded more safe using
-lightweight hardware protection
-domains~\cite{nooks}
-do not offer the flexibility that certain applications may need.
-We argue that in embedded systems,
-applications should have direct access to hardware resources when those
-resources are not shared or the hardware can do isolation by
-itself~\cite{ix:osdi2014}.
+sensitive user interactions. General-purpose system support for event-driven
+models has largely focused on latency, throughput, and
+scalability~\cite{epoll,libasync,ninja}, rather than power draw, which is
+typically more important in embedded devices.  Finally, embedded applications
+often require direct access to underlying hardware resources.  Some
+general-purpose operating systems have attempted to make dynamically loaded
+drivers more safe by using lightweight hardware protection domains~\cite{nooks}
+but do not offer the flexibility that many embedded applications may need.  We
+argue that in embedded systems, \emph{applications} should have direct access to
+hardware resources when those resources are not shared or the hardware can do
+isolation by itself~\cite{ix:osdi2014}.
 
 % %% not sure if this figure is needed
 % % \begin{figure}

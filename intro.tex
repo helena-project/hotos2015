@@ -20,11 +20,11 @@ computing with physical devices.
 Smart pill bottles such as AdhereTech's~\cite{adheretech} monitor our
 medications and remind us of missed doses and wearable personal fitness trackers
 like Fitbit~\cite{fitbit} and UP~\cite{jawboneup} measure our steps and sleep
-patterns. But the devices are siloed: Fitbit cannot load the ``pill app'' that
+patterns. But these devices are siloed: Fitbit cannot load a ``pill app'' that
 vibrates when it is time to take today's medication.
 As embedded systems grow from narrow applications into a more general
 purpose computing platforms, there will be a need to dynamically load
-applications and share the hardware across multiple applications. In fact, this
+applications and share hardware across multiple applications. In fact, this
 trend is already underway: the Pebble watch~\cite{pebble}, for example, supports loading
 executable code that can use the built-in sensors and display as well as
 communicate with apps on a connected mobile phone.
@@ -32,8 +32,8 @@ communicate with apps on a connected mobile phone.
 %on and off, brighter and dimmer---,
 
 Traditionally, embedded systems have been single-purpose, single-application
-devices. A developer compiles a monolithic application image which incorporates
-the OS and gives the application full access to underlying hardware.
+devices. A developer compiled a monolithic application image which incorporated
+the OS and gave the application full access to underlying hardware.
 The software was co-designed with hardware---i.e. by the same
 people---and this paradigm was what the
 underlying microcontrollers could support.
@@ -79,9 +79,8 @@ It should enable and encourage
 multiple concurrent, isolated applications, provide  hardware abstractions
 as well as low-level hardware access, and offer critical services to Internet
 of Things applications. We discuss three protection
-mechanisms---language level isolation, software mediated hardware protection, and
-multiple isolated processors---that operating systems should utilize to achieve
-these goals.
+mechanisms that operating systems should utilize to achieve these goals---language level isolation, software mediated hardware protection, and
+multiple isolated processors.
 
 %(alevy): I don't think we need this in the intro.
 %As a concrete example of what such an operating
