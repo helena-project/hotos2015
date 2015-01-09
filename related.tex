@@ -36,7 +36,7 @@ and applications
 % security checks and since there is no memory protection applications
 have unlimited access to the entire system.
 
-The Contiki operating system is another microcontroller-based
+The Contiki~\cite{contiki} operating system is another microcontroller-based
 operating system
 with extensive networking support.
 % . It has led TCP/IP integration with embedded systems
@@ -47,7 +47,7 @@ link-layer encryption and integrity and the OS does not support
 dynamically loaded applications.
 %% again this is not true contiki supports dynically loaded code.
 
-FreeRTOS is an open-source commercial operating system intended to
+FreeRTOS~\cite{freertos} is an open-source commercial operating system intended to
 support a wide range of applications on many different processors. It
 is used in applications from the Nest Protect to smart meters to
 thermal monitoring systems. FreeRTOS supports for network security
@@ -58,3 +58,8 @@ can spawn a task that runs in privileged mode and arbitrarily modify
 % http://sourceforge.net/p/freertos/discussion/382005/thread/7b135e95
 the system~\cite{rtos-tasks,rtos-sec}.
 
+Other embedded operating systems have explored designs with a core kernel and
+separate applications. For example, SOS~\cite{han05sos} provides dynamically
+loadable applications and drivers on top of a core kernel. However, given
+the hardware constraints when SOS was developed, it provided no memory protection
+and assumed trust between applications.
