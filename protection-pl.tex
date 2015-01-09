@@ -3,44 +3,40 @@
 The C programming language has long been the language of choice for system-level
 programming, including operating systems development. C is inherently an unsafe
 programming language \cite{kint:osdi2012, undefined:apsys2012}. As such, much
-effort has been made to develop operating systems in high-level languages with
-stricter semantics \cite{singularity:sigops, house:icfp2005, unikernels:2013}.
-These efforts have shown that language features like type safety, memory safety,
-and strict aliasing can provide support for operating system protection.
-Unfortunately, high-level languages often rely heavily on things like dynamic
-allocation and garbage collection, which make them inapproriate for an embedded
-operating system. Luckily, low-level languages are beginning to include many of
-these features~\cite{c++14,rust}, making them available to embedded OS builders.
+effort has been made to develop operating systems in languages with stricter
+semantics \cite{singularity:sigops, house:icfp2005, unikernels:2013}. These
+efforts have shown that language features like type safety, memory safety, and
+strict aliasing can provide support for operating system protection.
+% Unfortunately, high-level languages often rely heavily on things like dynamic
+% allocation and garbage collection, which make them inapproriate for an embedded
+% operating system. Luckily, low-level languages are beginning to include many of
+% these features~\cite{c++14,rust}, making them available to embedded OS builders.
 
 \paragraph{Memory Safety.}
-Memory safety bugs---dangling pointers, double-free, access to unallocated
+Memory safety bugs---dangling pointers, double-frees, access to unallocated
 memory, and pointer arithmetic errors---plague operating systems written in
-languages with weak memory semantics.  Languages that guarantee memory safety
-obviate such bugs by catching them at compile-time.  For instance, a kernel
+languages with weak memory semantics. Languages that guarantee memory safety
+obviate such bugs by catching them at compile-time. For instance, a kernel
 written in a memory safe language can enforce memory isolation of drivers at
-compile time, without relying on hardware support~\cite{spin:sosp}.
+compile time without relying on hardware support~\cite{spin:sosp}.
 
 \paragraph{Type Safety.}
-Strict types allow trusted modules to expose low-level hardware through an
-interface that cannot be subverted by untrusted client-code. In turn, a well
-designed type-safe interface can help constrain client-code to
-particular operations on the underlying hardware. Moreover, compile-time
-optimzations can make such interfaces cost-free without sacrificing safety. As a
-result, careful interface design can allow for minimum unsafe kernel code. We
-argue that pricipled methods for designing such interfaces should be a goal of
-future operating systems research.
+Strong, strict types enable low-level hardware to be exposed through typed
+abstractions that cannot be subverted by untrusted code. Because client code
+utilizing these interfaces is constrained to the particular hardware operations
+exposed by the interface, careful interface design can result in fully safe
+hardware access for untrusted code. As a result, careful interface design can
+allow for minimum unsafe kernel code. We argue that principled methods for
+designing such interfaces should be a goal of future operating systems research.
 
 \paragraph{Strict Aliasing.}
-%% TODO(alevy): This subsection is lacking, probably needs a rewrite. What
-%% mechanisms do OSs in C use to get thread safety?
-Strict aliasing rules, such as unique references and read/write references,
-enforce thread safety by the language. We seek to exploit these semantics by
-modeling hardware resources as references, allowing two or more execution
-contexts to run concurrently without hardware race conditions. \textit{Unique
-references} to hardware guarantee that only a single active execution context
-can access the reference, guaranteeing thread safety to applications holding the
-reference.  \textit{Read/write references} guarantee that two active contexts
-can read, but cannot mutate, the same state.  If multiple applications require
-write access to the same resource, a broker with a unique reference to the
-resource can mediate access.
-
+Operating systems typically enforce, but do not guarantee, thread safety at
+runtime by using atomic primitives. In contrast, languages with strict aliasing
+rules, such as unique and read/write references, guarantee thread safety at
+compile-time. \textit{Unique references} ensure that only a single active
+execution context can access the reference, while \textit{read/write references}
+ensure that multiple references to the same state are immutable. If multiple
+applications require write access to the same resource, a broker with a unique
+reference to the resource can mediate access. Consequently, by modeling hardware
+resources as unique or read/write references, the kernel can guarantee the
+preclusion of hardware race conditions.
