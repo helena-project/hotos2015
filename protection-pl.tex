@@ -12,6 +12,14 @@ allocation and garbage collection, which make them inapproriate for an embedded
 operating system. Luckily, low-level languages are beginning to include many of
 these features~\cite{c++14,rust}, making them available to embedded OS builders.
 
+\paragraph{Memory Safety.}
+Memory safety bugs---dangling pointers, double-free, access to unallocated
+memory, and pointer arithmetic errors---plague operating systems written in
+languages with weak memory semantics.  Languages that guarantee memory safety
+obviate such bugs by catching them at compile-time.  For instance, a kernel
+written in a memory safe language can enforce memory isolation of drivers at
+compile time, without relying on hardware support~\cite{spin:sosp}.
+
 \paragraph{Type Safety.}
 Strict types allow trusted modules to expose low-level hardware through an
 interface that cannot be subverted by untrusted client-code. In turn, a well
@@ -22,48 +30,17 @@ result, careful interface design can allow for minimum unsafe kernel code. We
 argue that pricipled methods for designing such interfaces should be a goal of
 future operating systems research.
 
-\paragraph{Memory Safety.}
-Memory safety bugs---dangling pointers, double-free, access to unallocated
-memory, and pointer arithmetic errors---plague operating systems
-written in languages with weak memory semantics.
-Languages that guarantee memory safety obviate such bugs by catching them at
-compile-time.
-For instance, a kernel written in a memory safe language can enforce memory
-isolation of drivers at compile time, without relying on hardware
-support~\cite{spin:sosp}.
-
 \paragraph{Strict Aliasing.}
+%% TODO(alevy): This subsection is lacking, probably needs a rewrite. What
+%% mechanisms do OSs in C use to get thread safety?
 Strict aliasing rules, such as unique references and read/write references,
-%are used to
-enforce thread safety
-%in modern programming languages
-by the language. We seek to
-exploit these semantics
-% to provide thread-safe hardware access
-by modeling
-hardware resources as references, allowing two or more applications to run
-concurrently without
-%fear of race conditions when accessing hardware
-hardware race conditions.
-% This means that two or more concurrently running applications may
-% attempt to access the same hardware, resulting in access patterns unanticipated
-% by the hardware. We seek to exploit strict aliasing semantics, such as unique
-% and read/write references, by modeling hardware resources as references,
-% guaranteeing thread-safe hardware access.
-\textit{Unique references}
-to hardware
-guarantee that only a single active execution context
-can access the reference,
-%By modeling hardware as a unique reference, a
-guaranteeing thread safety to applications holding the reference.
-\textit{Read/write references} guarantee that two active contexts can read, but cannot mutate,
-the same state.
-% If two or more applications require read access to the same
-% resource, read/write references can be used to make the same guarantee.
-If multiple applications require write access to the same resource, a broker with a
-unique reference to the resource can mediate access.
-%to said resource.
+enforce thread safety by the language. We seek to exploit these semantics by
+modeling hardware resources as references, allowing two or more execution
+contexts to run concurrently without hardware race conditions. \textit{Unique
+references} to hardware guarantee that only a single active execution context
+can access the reference, guaranteeing thread safety to applications holding the
+reference.  \textit{Read/write references} guarantee that two active contexts
+can read, but cannot mutate, the same state.  If multiple applications require
+write access to the same resource, a broker with a unique reference to the
+resource can mediate access.
 
-By composing type safety, memory safety, and strict aliasing, a next-generation
-operating system can expose safe interfaces to applications and device drivers
-with strong protection guarantees at little performance cost.
