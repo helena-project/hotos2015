@@ -90,7 +90,14 @@ specific peripherals.
 \begin{figure}
  \centering
 \includegraphics[width=1\columnwidth]{img/memory-layout}
-\caption{Memory layout of \name.}
+\caption{Memory layout and access permissions while executing an application.
+\name lays out memory into four types of regions: code, memory mapped I/O,
+application memory and the kernel stack. Greyed regions are marked unreadable
+and unwritable, while hatched regions are read-only. The application memory
+contains a subregion used by the kernel for application-specific kernel data
+structures and is thus inaccessible to the application. Conversely, some
+hardware registers are exposed directly to applications by marking them
+read-only.}
  \label{fig:memory-layout}
 \end{figure}
 
