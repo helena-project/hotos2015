@@ -24,8 +24,11 @@ of goals and challenges.
 % As a result, embedded
 % systems are evolving to have requirements decendent from both previous embedded
 % systems and general-purpose systems.
-The juxtaposition of these requirements
-carves a unique design space in operating systems research.
+% The juxtaposition of these requirements
+% carves a unique design space in operating systems research.
+Juxtaposing these requirements and constraints drives the design considerations
+for new embedded operating system design.
+
 
 % They do not provide a mechanism for granting applications arbitrary direct
 % hardware access for performance or peripheral requirements purposes.
@@ -69,16 +72,18 @@ carves a unique design space in operating systems research.
 
 \subsection{General-Purpose Requirements}
 
-In traditional embedded systems application code was completely trusted with
-full access to all hardware resources. This was reasonable because applications
-were not written by third-parties and were typically not updated by end-users.
-However, new embedded devices, like the Pebble~\cite{pebble} watch, not only
-allow third-party applications but allow the end-user to dynamically load
-applications over the network from an app store.
+In traditional embedded systems, application code is completely trusted with
+full access to all hardware resources.
+Applications written and controlled by a single developer make this reasonable.
+% This is reasonable because applications
+% were not written by third-parties and were typically not updated by end-users.
+However, new embedded devices, like Pebble,
+allow third-party applications and the end-user to dynamically load
+applications from an app store.
 A modern operating system for embedded devices must support loading applications
 dynamically by the end-user. It must also protect the hardware and
-kernel from these applications as well as applications from one another.
-Modern general-purpose operating systems use hardware features like
+kernel from these applications and applications from one another.
+Modern general-purpose operating systems use hardware features such as
 virtual memory and hardware virtualization to isolate applications. While these
 features are not available in embedded microcontrollers, embedded operating
 systems must use the tools at their disposal to achieve similar goals.
