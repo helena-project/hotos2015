@@ -1,34 +1,41 @@
 \section{\name: a Secure Embedded OS}
 \label{sec:os}
 
-\name is a new embedded operating system
-specifically designed for platforms running multiple, potentially untrusted
-applications concurrently and third-party, contributed device drivers that are
-assumed to be buggy. \name uses three protection mechanisms to protect three
-different components in the operating system.
-First, the kernel is written in Rust~\cite{rust}, a new systems language that provides
-compile-time memory safety and ownership, and uses the language to protect the
-core of the kernel (e.g. the scheduler and hardware abstraction layer) from
-contributed device drivers.
-Second, \name uses new Memory Protection Units (MPUs) to isolate third-party
-applications from each other and the kernel.
-Finally, where available, \name uses multiple microcontrollers to protect
-applications with timing concerns against starvation or leaking side-channel
-information.
-The remainder of this section gives an overview of the \name architecture,
-and aims to provide some intuition for importance and usage of an MPU.
+\name is a new embedded operating system specifically designed for platforms
+running multiple applications concurrently on platforms with multiple
+microcontrollers. \name's design centers around protection---from potentially
+malicious applications and from buggy device drivers. \name uses three
+protection mechanisms to protect three different components in the operating
+system. First, the kernel and device drivers are written in Rust~\cite{rust}, a
+new systems language that provides compile-time memory safety, type safety and
+strict aliasing. \name uses Rust to protect the core of the kernel (e.g. the
+scheduler and hardware abstraction layer) from platform specific device drivers
+as well as isolate device drivers from each other. Second, \name uses new Memory
+Protection Units (MPUs) to isolate third-party applications from each other and
+the kernel. Finally, where available, \name uses multiple microcontrollers to
+protect applications with timing concerns against starvation or leaking
+information through side-channels. The remainder of this section gives an
+overview of the \name architecture, and aims to provide some intuition for the
+importance and usage of an MPU.
 
 \subsection{Architecture}
 \label{sec:os-arch}
 
+\begin{figure}
+ \centering
+\includegraphics[width=1\columnwidth]{img/architecture}
+\caption{\name is written in Rust, a type-safe, memory-safe systems language.
+The name kernel's core has full access to the underlying hardware. Device
+drivers run with no hardware protection, but within a language sandbox that
+constrains their access to hardware. Applications are sandboxed using the MPU, a
+hardware memory protection mechanism, and can be written in any language (e.g.
+C, Rust, or even a scripting language like Lua).}
+\label{fig:architecture}
+\end{figure}
+
 % Definitions:
 %  Tock core -- the kernel code shipped and provided with base Tock
 %  Tock kernel -- the final compiled kernel, including core and drivers
-
-Unlike traditional, monolithic embedded operating systems, \name generates a
-standalone, portable kernel that is composed of platform-specific drivers at
-compile-time and enables dynamic loading of third-party applications at
-runtime.
 
 The \name core has complete system access, including arbitrary memory
 access and interrupt control. Device drivers are compiled into the kernel and
@@ -87,6 +94,7 @@ specific peripherals.
 
 \subsection{\name Memory Design in Detail}
 
+
 \begin{figure}
  \centering
 \includegraphics[width=1\columnwidth]{img/memory-layout}
@@ -101,38 +109,30 @@ read-only.}
  \label{fig:memory-layout}
 \end{figure}
 
-Without virtual memory but the requirement of providing memory isolation
-between applications and the kernel, \name has a carefully designed memory
-architecture.  \Cref{fig:memory-layout} shows the four types of memory
-regions in \name and the access rules during application execution.
+Tock has four types of memory regions, code regions, memory-mapped I/O regions,
+kernel stack and static data regions and application regions.
+Figure~\ref{fig:memory-layout} shows these regions and their access rules from
+an application.
 
 {\bf Code.}
-The code region contains kernel and application code.  While an application is
+The code region contains kernel and application code. While an application is
 executing code, it only has read and instruction fetch access to its own code
-segment.  An application cannot write to its own code section
-because typically
-% since, in most cases,
+segment. An application cannot write to its own code section because typically
 the code is backed by internal flash, which has limited write cycles.
 
 % n.b. Why endnotes? I looked around the HotOS CFP, and couldn't find anything
 % that requires them over footnotes. They're much more annoying to read IMHO.
 {\bf Memory-Mapped I/O.}
 Hardware registers are typically located in a single, continuous region of the
-memory space.\endnote{The location of hardware memory registers and flash is
-  determined by the chip manufacturer, however, chips chips typically place
-  flash at the bottom of memory, followed by RAM, and peripheral memory
-registers towards the top of memory.}
-\name may provide read-only or read-write access over small ranges of memory
-registers to applications, bypassing the kernel for direct hardware access.
-For example, our development platform uses the Atmel SAM4L Cortex-M4~\cite{sam4l} which
-provides a true random number generator (TRNG) peripheral.
-\name exposes random
-numbers directly to applications by allowing read-only access to a 32~byte
-range covering the 20~byte long TRNG registers (the tailing 12 bytes are innocuous).
-% The registers for reading
-% a new random value are contained in an 20~byte range.  \name exposes random
-% numbers directly to applications by allowing read-only access to a 32~byte
-% range covering these registers (the tailing 12 bytes are innocuous).
+memory space.~\endnote{The location of hardware memory registers and flash is
+determined by the chip manufacturer, however, chips chips typically place
+flash at the bottom of memory, followed by RAM, and peripheral memory
+registers towards the top of memory.} \name may provide read-only or read-write
+access over small ranges of memory registers to applications, bypassing the
+kernel for direct hardware access. For example, our development platform uses
+the Atmel SAM4L Cortex-M4~\cite{sam4l} which provides a true random number
+generator (TRNG) peripheral. \name exposes random numbers directly to
+applications by allowing read-only access to wthe TRNG registers.
 
 {\bf Kernel Stack and Static Data.}
 This section includes all kernel and device driver memory, including local
