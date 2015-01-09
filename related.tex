@@ -23,7 +23,7 @@ code specifies which abstractions and services it needs from the
 operating system, and the compilation toolchain uses this information
 to build an application-specific version of the OS that is compiled
 and directly linked with application code.
-Even with the threading library, TOSTheads~\cite{tosthreads}, and
+Even with the threading library, TOSThreads~\cite{tosthreads}, and
 dynamically linked applications, the
 % Later
 % versions of TinyOS included a threading library with which one could
@@ -52,7 +52,7 @@ both be trusted completely.
 FreeRTOS~\cite{freertos} is an open-source commercial operating system intended to
 support a wide range of applications on many different processors. It
 is used in applications from the Nest Protect to smart meters to
-thermal monitoring systems. FreeRTOS supports for network security
+thermal monitoring systems. FreeRTOS supports network security
 through TLS~\cite{tls} and DTLS~\cite{dtls}, but operates under the
 assumption that all code is trusted. For example, any task in the system
 can spawn a task that runs in privileged mode and arbitrarily modify
@@ -63,9 +63,9 @@ the system~\cite{rtos-tasks,rtos-sec}.
 Recent paravirtualization-based systems such as Dune~\cite{dune:osdi2012},
  Arrakis~\cite{arrakis:osdi2014}, and IX~\cite{ix:osdi2014}, have explored how hardware can
 be directly exposed to applications for high-performance or greater
-flexibility. These approaches all depend on the hardware resoures (e.g.,
-NICs, page tables) being paravirtualized by hardware. In contrast, embedded
-systems have no virtualization. Tock applications do not access a virtualized
+flexibility. These approaches all depend on the hardware virtualization (e.g.,
+NICs, page tables). In contrast, embedded
+systems have no virtualization. \name applications do not access a virtualized
 SPI bus, they can gain direct access to hardware registers with no subsequent
 OS or hardware arbitration.
 
