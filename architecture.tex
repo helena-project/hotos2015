@@ -91,7 +91,7 @@ fixed sized memory region for it's stack, heap and data
 (\Cref{sec:arch:memory-design}), configuring the MPU, switching to an
 unprivileged execution mode and jumping to the application's {\tt init}
 function. While executing, the application can request resources (e.g. access to
-the \emph{TRNG memory mapped registers}), register callbacks for events (e.g. a
+the \emph{TRNG} memory mapped registers), register for callbacks to events (e.g. a
 timer or sensor interrupt) and issue commands (e.g. send a packet over the
 radio). Applications run in a single thread and will not be interrupted by event
 callbacks until either invoking the {\tt wait} system call, or returning from
@@ -163,10 +163,10 @@ ranges of memory registers to applications, bypassing the kernel for direct
 hardware access. For example, our development platform uses the Atmel SAM4L
 Cortex-M4~\cite{sam4l} which provides a true random number generator (TRNG)
 peripheral. \name exposes random numbers directly to applications by allowing
-read-only access to wthe TRNG registers.
+read-only access to the TRNG registers.
 
 {\bf Kernel Stack and Static Data.}
-These regions includes all kernel and device driver memory, including local
+These regions include all kernel and device driver memory, including local
 variables. The MPU restricts any application-level access to this memory
 section.
 
@@ -178,7 +178,7 @@ application count with kernel stack size. If the kernel stack grows too large,
 stack. Thus, applications with higher priority should be allocated memory
 regions at lower memory addresses. We intend to explore an alternate strategy of
 allocating application memory from a shared heap using the high granularity of
-the MPU.  This would trade-off a simpler processes for reclaiming stack space
+the MPU.  This would trade-off a simpler process for reclaiming stack space
 for better support of heterogeneously sized applications.
 
 
