@@ -12,7 +12,7 @@ strict aliasing can provide support for operating system protection.
 % operating system. Luckily, low-level languages are beginning to include many of
 % these features~\cite{c++14,rust}, making them available to embedded OS builders.
 
-\paragraph{Memory Safety.}
+{\bf Memory Safety.}
 Memory safety bugs---dangling pointers, double-frees, access to unallocated
 memory, and pointer arithmetic errors---plague operating systems written in
 languages with weak memory semantics. Languages that guarantee memory safety
@@ -20,7 +20,7 @@ obviate such bugs by catching them at compile-time. For instance, a kernel
 written in a memory safe language can enforce memory isolation of drivers at
 compile time without relying on hardware support~\cite{spin:sosp}.
 
-\paragraph{Type Safety.}
+{\bf Type Safety.}
 Strong, strict types enable low-level hardware to be exposed through typed
 abstractions that cannot be subverted by untrusted code. Because client code
 utilizing these interfaces is constrained to the particular hardware operations
@@ -29,7 +29,7 @@ hardware access for untrusted code. As a result, careful interface design can
 allow for minimum unsafe kernel code. We argue that principled methods for
 designing such interfaces should be a goal of future operating systems research.
 
-\paragraph{Strict Aliasing.}
+{\bf Strict Aliasing.}
 Operating systems typically enforce, but do not guarantee, thread safety at
 runtime by using atomic primitives. In contrast, languages with strict aliasing
 rules, such as unique and read/write references, guarantee thread safety at

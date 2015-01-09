@@ -1,22 +1,25 @@
 \section{\name: a Secure Embedded OS}
 \label{sec:os}
 
-\name is a new embedded operating system specifically designed for platforms
-running multiple applications concurrently on platforms with multiple
-microcontrollers. \name's design centers around protection---from potentially
-malicious applications and from buggy device drivers. \name uses three
-protection mechanisms to protect three different components in the operating
-system. First, the kernel and device drivers are written in Rust~\cite{rust}, a
-new systems language that provides compile-time memory safety, type safety and
-strict aliasing. \name uses Rust to protect the core of the kernel (e.g. the
-scheduler and hardware abstraction layer) from platform specific device drivers
-as well as isolate device drivers from each other. Second, \name uses new Memory
-Protection Units (MPUs) to isolate third-party applications from each other and
-the kernel. Finally, where available, \name uses multiple microcontrollers to
+\name is an operating system  designed for embedded platforms
+with multiple processors running running multiple concurrent applications.
+\name's design centers around protection, both from potentially
+malicious applications and from device drivers. \name uses three
+mechanisms to protect different components of the operating
+system. First, the kernel and device drivers are written in Rust~\cite{rust}, 
+a systems programming language that provides compile-time memory safety, 
+type safety and
+strict aliasing. \name uses Rust to protect the kernel (e.g. the
+scheduler and hardware abstraction layer) from platform specific
+device drivers as well as isolate device drivers from each other. 
+Second, \name uses memory protection units
+ to isolate applications from each other and
+the kernel. Finally, when available, \name uses multiple microcontrollers to
 protect applications with timing concerns against starvation or leaking
 information through side-channels. The remainder of this section gives an
-overview of the \name architecture, and aims to provide some intuition for the
-importance and usage of an MPU.
+overview of the \name architecture, focusing on how the kernel uses the
+MPU for protection while simultaneously giving applications direct access
+to hardware.
 
 \subsection{Architecture}
 \label{sec:os-arch}
@@ -37,28 +40,32 @@ C, Rust, or even a scripting language like Lua).}
 %  Tock core -- the kernel code shipped and provided with base Tock
 %  Tock kernel -- the final compiled kernel, including core and drivers
 
-The \name core has complete system access, including arbitrary memory
+The \name kernel has complete system access, including arbitrary memory
 access and interrupt control. Device drivers are compiled into the kernel and
 run with the same \emph{hardware} privileges but inside a
 \emph{language-level} sandbox. This sandbox statically enforces that device
-drivers only use core-provided hardware interfaces, limits dynamic memory
+drivers only use kernel hardware interfaces, limits dynamic memory
 allocation to load time, and prevents uncoordinated access of underlying
 hardware resources.
 
-Applications are separated from the kernel by a syscall ABI and need not be
-written in Rust. Applications have an execution stack, an application memory
+Applications are separated from the kernel by a syscall ABI and can be
+written in any language that can interface with the ABI. 
+Applications have an execution stack, an application memory
 heap, and a kernel memory heap. Kernel (and driver) dynamic allocations take
 place in the application memory space, thus charging applications for buffers
 the kernel creates on their behalf and ensuring that an out-of-memory
-condition terminates the application and does not cause a kernel error. The
-application-level kernel memory heap is protected from application access by the
-MPU.
-%
-The ABI provides access to system hardware resources. For embedded applications,
-however, direct access to a hardware peripheral is often required.
-Applications can request direct ownership, in which case the kernel uses the
-MPU to grant the application access to the memory mapped I/O region of
-specific peripherals.
+condition terminates the application and does not cause a kernel error. 
+The kernel uses the MxPU to protect the application-level kernel memory heap
+from application access.
+
+The ABI can provide direct access to system hardware resources. If an 
+application requires direct access, it can request it from the kernel.
+If granted, the kernel uses the MPU to make the memory mapped I/O region
+of specific peripherals accessible to the application. Because processors
+such as the Cortex M support access permissions on as fine grained boundaries
+as 32 bytes, the kernel can expose one port of GPIO pins but not others.
+Enabling this kind of access safely requires that kernel-controlled
+peripherals be connected only to GPIO ports that cannot be exposed.
 
 %% Brad: not sure what this paragraph contributes to the paper, particularly
 %% in this section. I think the contents of this should be discussed in the sections above, if
@@ -91,9 +98,19 @@ specific peripherals.
 % active regions. Finally, memory regions and protection bits can be changed
 % during exection, for example while context switching between applications.
 
-
 \subsection{\name Memory Design in Detail}
 
+One major challenge in Tock is defining a memory management design
+that allows untrusted application code 
+to interact with a type-safe Rust kernel, for the kernel to be able to
+issue event upcalls to the application, for device driver isolation, and 
+for applications to directly
+acccess hardware. To achieve this
+Tock defines four types of memory regions: code regions, 
+memory-mapped I/O regions,
+kernel stack and static data regions and application regions.
+\Cref{fig:memory-layout} shows these regions and their access rules from
+an application.
 
 \begin{figure}
  \centering
@@ -109,13 +126,10 @@ read-only.}
  \label{fig:memory-layout}
 \end{figure}
 
-Tock has four types of memory regions, code regions, memory-mapped I/O regions,
-kernel stack and static data regions and application regions.
-\Cref{fig:memory-layout} shows these regions and their access rules from
-an application.
+
 
 {\bf Code.}
-The code region contains kernel and application code. While an application is
+A code region contains kernel and application code. While an application is
 executing code, it only has read and instruction fetch access to its own code
 segment. An application cannot write to its own code section because typically
 the code is backed by internal flash, which has limited write cycles.
@@ -133,16 +147,12 @@ peripheral. \name exposes random numbers directly to applications by allowing
 read-only access to wthe TRNG registers.
 
 {\bf Kernel Stack and Static Data.}
-This section includes all kernel and device driver memory, including local
-variables. The MPU restricts any application-level access to this memory section.
-% buffers and any local
-% variables such that applications may not access the kernel stack in any way.
-% The kernel does not allocate memory dynamically except on the stack and inside
-% application memory regions.
-%As a result, the kernel stack is the only region dedicated to kernel memory.
+These regions includes all kernel and device driver memory, including local
+variables. The MPU restricts any application-level access to this memory
+section.
 
 {\bf Application Memory.}
-Currently, \name allocates a continuous, fixed size region for each
+\name allocates a continuous, fixed size region for each
 application.
 %(our development platform has 64KB of RAM and we currently use 2KB
 %memory regions for applications, but this will likely vary based on the
@@ -161,17 +171,18 @@ a simpler processes for reclaiming stack space
 for better support of heterogeneously sized applications.
 
 
-An application's memory region is not entirely its own. Most of its memory is
+Most of an
+application's memory is
 used for its stack, static variables, and heap. However,
 the kernel may also ``borrow'' memory from the top of an application's memory
 region for application-specific kernel data structures. This region, which may
 change in size,
 %is \emph{inside} the application's memory space, but
 is marked
-as read and write protected when the application is running. Therefore, the
-kernel and device drivers can allocate memory dynamically in response to an
+as read and write protected when the application is running. This allows the
+kernel and device drivers to allocate memory dynamically in response to an
 application without
-potentially causing an out-of-memory kernel error and while still
+potentially causing an out-of-memory kernel error and while
 % sacrificing the reliability of never dynamically
 % allocating in the kernel itself and while
 maintaining the integrity and
