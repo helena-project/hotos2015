@@ -65,12 +65,12 @@ application memory from misbehaving applications. However,
 isolation and safety is only as good as the kernel itself. As numerous recent
 results show, OS kernels contain scores of memory access bugs that applications
 can exploit to crash a system or gain unauthorized
-access~\cite{nickolai}. By writing the OS kernel in a type-safe, memory-safe
-language with strong semantics, we can eliminate whole classes of
-vulnerabilities. The relative simplicity of Cortex-M processors and embedded
-operating system APIs means that writing such a kernel is a manageable task.
-This makes an embedded OS especially well suited for research in
-secure operating systems design.
+access~\cite{kint:osdi2012,linuxvulns:apsys11}. By writing the OS kernel in a
+type-safe, memory-safe language with strong semantics, we can eliminate whole
+classes of vulnerabilities. The relative simplicity of Cortex-M processors and
+embedded operating system APIs means that writing such a kernel is a
+manageable task.  This makes an embedded OS especially well suited for
+research in secure operating systems design.
 % still open to easy extension and evolution.
 
 It is time for embedded operating systems to evolve! In this paper, we argue
