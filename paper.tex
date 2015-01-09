@@ -33,6 +33,12 @@
 \hypersetup{pdfstartview=FitH}                                         % Sets default zoom to 100% width 
 \usepackage[capitalise,nameinlink,noabbrev]{cleveref}                  % Do the right thing with fig/table references
 
+\setlength{\textfloatsep}{0.40cm}
+\usepackage[compact,nonindentfirst]{titlesec}
+\titlespacing{\section}{0pt}{1.5ex}{0.4ex}
+\titlespacing{\subsection}{0pt}{1ex}{0.37ex}
+\titlespacing{\paragraph}{0pt}{0ex}{1ex}
+
 
 % Break URLs properly (thanks to Alex Halderman)
 \def\UrlBreaks{\do-\do\.\do\@\do\\\do\!\do\_\do\|\do\;\do\>\do\]\do\)\do\,\do\?\do\'\do+\do\=\do\#}
@@ -79,20 +85,20 @@
     Amit Levy$^\ddagger$,
     and
     Pat Pannuto$^\S$
-    \vspace{0.3cm}
+    %%\vspace{0.3cm}
   } \\
   %
-  \small{$^\dagger$Computer Science \& Engineering} &
-  \small{$^\ddagger$Computer Science \& Engineering} &
-  \small{$^\S$Computer Science \& Engineering} \\
+  %\small{$^\dagger$Computer Science \& Engineering} &
+  %\small{$^\ddagger$Computer Science \& Engineering} &
+  %\small{$^\S$Computer Science \& Engineering} \\
   %
-  \small{University of California, Berkeley} &
-  \small{Stanford University} &
-  \small{University of Michigan} \\
+  \small{$^\dagger$University of California, Berkeley} &
+  \small{$^\ddagger$Stanford University} &
+  \small{$^\S$University of Michigan} \\
   %
-  \small{Berkeley, CA 94720} &
-  \small{Stanford, CA 94305} &
-  \small{Ann Arbor, MI 48109} \\
+  %\small{Berkeley, CA 94720} &
+  %\small{Stanford, CA 94305} &
+  %\small{Ann Arbor, MI 48109} \\
   %
   \small{\{m.andersen,culler\}@berkeley.edu} &
   \small{\{tbauer01,sbenitez,pal,levya\}@stanford.edu} &
