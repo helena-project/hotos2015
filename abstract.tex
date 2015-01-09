@@ -2,28 +2,28 @@
 
 Microcontroller operating systems and frameworks typically assume that a single,
 monolithic application will run on an embedded system.
-Traditionally,
-optimizing for power, squeezing applications into minimal code and memory
-allocations, and lacking hardware support
-% In fact, historically, power draw, memory and code sizes, and lack of hardware support
-have
-constrained microcontroller applications to be single-function.
+Traditionally, the need to optimize for power and to squeeze applications into
+minimal code and memory allocations have constrained microcontroller
+applications to be single-function.
+The absence of hardware primitives capable of providing protection has
+elimintaed security and isolation as considerations.
 Newer hardware, however, has changed this paradigm.
-The microcontroller is growing up and can now support
-a secure, trusted kernel and
-multiple, isolated, concurrent, and dynamically-loaded applications,
-all while operating on the power budgets that originally made this device
-class feasible.
-While the hardware support is present, the software ecosystem to capitalize on these
-advances is lagging behind. To remedy this, we propose Tock, a new embedded operating system design
-that builds on established operating system
-principles while adapting to the embedded system environment. Tock exploits
-memory protection units, advancements in modern systems programming languages,
-and the event driven nature of embedded applications to allow a core kernel,
-device specific drivers, and untrusted applications to coexist on a single
-microcontroller. This new operating system will allow embedded devices to
-mature beyond program-once, deploy-once systems and into re-usable, ubiquitous,
-and reliable computing platforms.
+The microcontroller is growing up and can now support a secure, trusted kernel
+and multiple, isolated, concurrent, and dynamically-loaded applications, all
+while operating on the power budgets that originally made this device class
+feasible.
+While the hardware support is now present, the software ecosystem to
+capitalize on these advances is lagging behind.
+To remedy this, we propose Tock, a new embedded operating system that builds
+on established operating system principles adapted to the embedded system
+environment.
+Tock exploits memory protection units, advancements in modern systems
+programming languages, and the event driven nature of embedded applications to
+allow a core kernel, device specific drivers, and untrusted applications to
+coexist on a single microcontroller.
+This new operating system will allow embedded devices to mature beyond
+program-once, deploy-once systems into re-usable, ubiquitous, and reliable
+computing platforms.
 
 
 
