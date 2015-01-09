@@ -2,7 +2,7 @@
 \label{sec:os}
 
 \name is an operating system  designed for embedded platforms
-with multiple processors running running multiple concurrent applications.
+with multiple processors running multiple concurrent applications.
 \name's design centers around protection, both from potentially
 malicious applications and from device drivers. \name uses three
 mechanisms to protect different components of the operating
@@ -55,7 +55,7 @@ heap, and a kernel memory heap. Kernel (and driver) dynamic allocations take
 place in the application memory space, thus charging applications for buffers
 the kernel creates on their behalf and ensuring that an out-of-memory
 condition terminates the application and does not cause a kernel error. 
-The kernel uses the MxPU to protect the application-level kernel memory heap
+The kernel uses the MPU to protect the application-level kernel memory heap
 from application access.
 
 The ABI can provide direct access to system hardware resources. If an 
@@ -84,6 +84,24 @@ peripherals be connected only to GPIO ports that cannot be exposed.
 % clear if there's any intention of bringing to M's. Maybe this though belongs
 % more in the HW section earlier?
 
+\subsection{Execution Model}
+
+When a device powers on or resets, \name loads each application by allocating a
+fixed sized memory region for it's stack, heap and data
+(\Cref{sec:arch:memory-design}), configures the MPU, switches to an unprivileged
+execution mode and jumps to the application's {\tt init} function. Application's
+run in a single thread and will not be interrupted by event callbacks until
+either invoking the {\tt wait} system call, or returning from {\tt init} (which is
+an implicit {\tt wait}). While executing, the application can request resources
+(e.g. access to the \emph{TRNG memory mapped registers}), register callbacks for
+events (e.g. a timer or sensor interrupt) and issue commands (e.g. send a packet
+over the radio). Once it has issued the {\tt wait} system call, the kernel
+suspends the application until a relevent event has fired, and a callback can be
+invoked. Finally, the kernel invokes callbacks by pushing an additional stack
+frame onto the application's stack and jumping to the callback function. Thus,
+when a callback function returns, execution is resumed where the {\tt wait}
+system call was invoked.
+
 
 % \subsection{The Cortex-M MPU}
 %
@@ -99,6 +117,7 @@ peripherals be connected only to GPIO ports that cannot be exposed.
 % during exection, for example while context switching between applications.
 
 \subsection{\name Memory Design in Detail}
+\label{sec:arch:memory-design}
 
 One major challenge in Tock is defining a memory management design
 that allows untrusted application code 
@@ -152,22 +171,14 @@ variables. The MPU restricts any application-level access to this memory
 section.
 
 {\bf Application Memory.}
-\name allocates a continuous, fixed size region for each
-application.
-%(our development platform has 64KB of RAM and we currently use 2KB
-%memory regions for applications, but this will likely vary based on the
-%requirements of each target platform).
+\name allocates a continuous, fixed size region for each application.
 Application memory and the kernel stack grow towards each other to balance
-application count with kernel stack size. If the kernel stack
-grows too large, \name terminates the application with the
-largest memory region. We intend to explore an alternate strategy of
-allocating application memory from a shared heap using the
-high granularity of the MPU.
-This would trade-off
-% We have not yet explored the tradeoffs between
-% these two strategies, but at a high level fixed sized application memory
-% regions make it
-a simpler processes for reclaiming stack space
+application count with kernel stack size. If the kernel stack grows too large,
+\name terminates the application whos memory region is closest to the kernel
+stack. Thus, applications with higher priority should be allocated memory
+regions at lower memory addresses. We intend to explore an alternate strategy of
+allocating application memory from a shared heap using the high granularity of
+the MPU.  This would trade-off a simpler processes for reclaiming stack space
 for better support of heterogeneously sized applications.
 
 
