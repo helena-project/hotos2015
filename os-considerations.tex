@@ -5,15 +5,26 @@ Tanenbaum's \emph{Modern Operating Systems} asserts, ``The main property which
 distinguishes embedded systems from handhelds is the certainty that no untrusted
 software will ever run on it''~\cite{tanenbaum}. This was once true, but is no
 longer the case. The Pebble~\cite{pebble} watch, for example, allows users to
-load multiple third-party applications dynamically. On the other hand,
-applications for embedded systems have not become more like their
-general-purpose counterparts. Specifically, applications are still primarily
-event-driven with short bursts of computation rather than long running or
-user-interactive. Moreover, neither sleep currents or battery capacity have
-changed significantly over the past decade, so next-generation embedded systems
-are still concerned with minimizing power consumption.  As a result, embedded
-systems are evolving to have requirements decendent from both previous embedded
-systems and general-purpose systems. The juxtaposition of these requirements
+load multiple third-party applications dynamically.
+Embedded systems have traditionally been categorized by event-driven computation,
+miniscule sleep currents, and constrained battery life. Existing embedded operating systems
+have provided support for these properties and constraints. Providing support for concurrent, isolated
+applications, as traditional operating systems do, provides a different set
+of goals and challenges.
+% %On the other hand,
+% Applications for embedded systems
+% are categorized by their
+% % have not become more like their
+% % general-purpose counterparts. Specifically, applications are still primarily
+% event-driven nature with short bursts of computation rather than long-running or
+% user-interactive. Moreover, embedded sleep currents and battery capacity have not
+% improved significantly over the past decade.
+% % so next-generation embedded systems
+% % are still concerned with minimizing power consumption. 
+% As a result, embedded
+% systems are evolving to have requirements decendent from both previous embedded
+% systems and general-purpose systems.
+The juxtaposition of these requirements
 carves a unique design space in operating systems research.
 
 % They do not provide a mechanism for granting applications arbitrary direct
