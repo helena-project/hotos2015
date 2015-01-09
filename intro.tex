@@ -37,10 +37,14 @@ the OS and gives the application full access to underlying hardware.
 The software was co-designed with hardware---i.e. by the same
 people---and this paradigm was what the
 underlying microcontrollers could support.
-Microcontroller families such as the MSP430 and Atmega were simple and
-lacked features of general-purpose processors such as virtual
-memory or segmentation. As a result, embedded ``operating systems'' have no
-security mechanisms and applications must be trusted completely.
+Without virtual memory or segmentation features
+% Microcontroller families such as the MSP430 and Atmega were simple and
+% lacked features of general-purpose processors such as virtual
+% memory or segmentation. As a result,
+embedded ``operating systems'' have no
+security mechanisms and applications must be trusted completely. Even designs
+which separate kernel and application code~\cite{han05sos,contiki,freertos}
+require trusted applications.
 
 However, a new generation of microcontrollers has emerged recently.
 These processors, based on the ARM Cortex-M architecture, sit in a middle ground
