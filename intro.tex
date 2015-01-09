@@ -4,20 +4,28 @@ As networking became an integral part of computing through the Internet and
 world wide web, system security grew in importance from a niche interest of the
 military into a core requirement for operating systems. While far from perfect,
 today's general purpose operating systems support firewalls, NATs, encrypted
-networking, no-execute bits, radomized memory allocation, and
-host of other security features. With the growth in network connected embedded
+networking, no-execute bits, randomized memory allocation, signed packages, and a
+host of other security features. With the growth in networked embedded
 devices, it is time for embedded operating systems to follow suit.
 
 Today, we see the emergence of ``intelligent'' \textit{things} that integrate
-computing with physical devices. Smart watches such as the Pebble~\cite{pebble}
-provide a clock application and a limited set of applets. Smart light bulbs such
-as the Phillips Hue~\cite{hue} support simple functions--- turn on, turn blue,
-glow brighter---and personal fitness trackers like Fitbit and
-UP~\cite{fitbit,jawboneup} measure and track our steps, heartrate and sleep
-patterns. As embedded systems grow from narrow applications into a more general
+computing with physical devices.
+% Smart watches such as the Pebble~\cite{pebble}
+% provide a clock application and a limited set of applets.
+% Smart light bulbs such
+% as the Phillips Hue~\cite{hue} support simple functions---turn on, turn blue,
+% glow brighter---and personal fitness trackers like Fitbit~\cite{fitbit} and
+% UP~\cite{jawboneup} measure our steps, heart rate and sleep
+% patterns.
+Smart pill bottles such as AdhereTech's~\cite{adheretech} monitor our
+medications and remind us of missed doses and wearable personal fitness trackers
+like Fitbit~\cite{fitbit} and UP~\cite{jawboneup} measure our steps and sleep
+patterns. But the devices are siloed: Fitbit cannot load the ``pill app'' that
+vibrates when it is time to take today's medication.
+As embedded systems grow from narrow applications into a more general
 purpose computing platforms, there will be a need to dynamically load
-applications and share the hardware across multiple applications. In fact, This
-trend is already underway: the Pebble watch, for example, supports loading
+applications and share the hardware across multiple applications. In fact, this
+trend is already underway: the Pebble watch~\cite{pebble}, for example, supports loading
 executable code that can use the built-in sensors and display as well as
 communicate with apps on a connected mobile phone.
 
@@ -26,47 +34,49 @@ communicate with apps on a connected mobile phone.
 Traditionally, embedded systems have been single-purpose, single-application
 devices. A developer compiles a monolithic application image which incorporates
 the OS and gives the application full access to underlying hardware.
-Historically, embedded software was co-designed with hardware---i.e. by the same
-people---and the underlying microcontrollers did not support different models.
-Microcontroller families such as the MSP430 and Atmega were extremely simple,
-lacking widely-used features in general-purpose processors such as virtual
+The software was co-designed with hardware---i.e. by the same
+people---and this paradigm was what the
+underlying microcontrollers could support.
+Microcontroller families such as the MSP430 and Atmega were simple and
+lacked features of general-purpose processors such as virtual
 memory or segmentation. As a result, embedded ``operating systems'' have no
 security mechanisms and applications must be trusted completely.
 
-However, a new generation of processors has emerged in the past few years.
+However, a new generation of microcontrollers has emerged recently.
 These processors, based on the ARM Cortex-M architecture, sit in a middle ground
-between full-fledged CPUs and microcontrollers. Like some mid-1980s processors,
+between full-fledged CPUs and older microcontrollers. Like some mid-1980s processors,
 they have a 32-bit address space, memory protection, and run at tens of MHz.
 Like microcontrollers, they have tens to a few hundred KB of RAM, provide many
 peripherals and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
 have sub-\uA sleep currents, allowing them to operate on a battery for
-months or years. The Atmel SAM4l~\cite{sam4l}, for example, is a
-microcontroller with a Cortex-M4 processor (40MHz, 64KB RAM, 512KB flash), a
-plethora of periherals (4 USARTs, 2 SPIs, 6 timers, native AES and a random number
+months or years. The Atmel SAM4L~\cite{sam4l}, for example, is a
+microcontroller with a Cortex-M4 processor (40~MHz, 64~KB RAM, 512~KB flash), a
+plethora of peripherals (4 USARTs, 2 SPIs, 6 timers, native AES and a random number
 generator) and has a sleep current as low as $0.9$~\uA.
 
-Most importantly to an operating system, this new generation of microcontrollers include
-memory protection, which can protect kernel memory, memory mapped I/O
-from applications and application memory from other applications. However,
+Most importantly to an operating system, this new generation of microcontrollers includes
+memory protection.
+This can protect kernel memory, memory-mapped I/O, and
+application memory from misbehaving applications. However,
 isolation and safety is only as good as the kernel itself. As numerous recent
 results show, OS kernels contain scores of memory access bugs that applications
-can use to exploit to crash a system or gain unauthorized
+can exploit to crash a system or gain unauthorized
 access~\cite{nickolai}. By writing the OS kernel in a type-safe, memory-safe
 language with strong semantics, we can eliminate whole classes of
 vulnerabilities. The relative simplicity of Cortex-M processors and embedded
 operating system APIs means that writing such a kernel is a manageable task.
-This makes an embedded OSes especially well suited for research in
+This makes an embedded OS especially well suited for research in
 secure operating systems design.
 % still open to easy extension and evolution.
 
-It is time for embedded operating systems evolve! In this paper, we argue
+It is time for embedded operating systems to evolve! In this paper, we argue
 that an embedded operating system should be more than a hardware API.
 It should enable and encourage
 multiple concurrent, isolated applications, provide  hardware abstractions
 as well as low-level hardware access, and offer critical services to Internet
 of Things applications. We discuss three protection
-mechanism---language level isolation, software mediated hardware protection and
-multiple isolated processors---operating systems should utilize to achieve
+mechanisms---language level isolation, software mediated hardware protection, and
+multiple isolated processors---that operating systems should utilize to achieve
 these goals.
 
 %(alevy): I don't think we need this in the intro.
