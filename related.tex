@@ -35,16 +35,18 @@ and applications
 % : there are no
 % security checks and since there is no memory protection applications
 have unlimited access to the entire system.
-
 The Contiki~\cite{contiki} operating system is another microcontroller-based
 operating system
-with extensive networking support.
+with extensive networking support. Security in Contiki is limited to
+link-layer encryption and integrity and the OS can run only a single
+application at once. SOS~\cite{han05sos}
+provides dynamically loadable applications  and drivers on top of a
+core kernel but provides no isolation or protection, therefore requiring 
+both be trusted completely.
+
 % . It has led TCP/IP integration with embedded systems
 % through libraries such as the $\mu$IP stack and a fully
 % certified IPv6 stack contributed by Cisco in 2008~\cite{contiki}.
-Security in Contiki is limited to
-link-layer encryption and integrity and the OS does not support
-dynamically loaded applications.
 %% again this is not true contiki supports dynically loaded code.
 
 FreeRTOS~\cite{freertos} is an open-source commercial operating system intended to
@@ -58,8 +60,23 @@ can spawn a task that runs in privileged mode and arbitrarily modify
 % http://sourceforge.net/p/freertos/discussion/382005/thread/7b135e95
 the system~\cite{rtos-tasks,rtos-sec}.
 
-Other embedded operating systems have explored designs with a core kernel and
-separate applications. For example, SOS~\cite{han05sos} provides dynamically
-loadable applications and drivers on top of a core kernel. However, given
-the hardware constraints when SOS was developed, it provided no memory protection
-and assumed trust between applications.
+Recent paravirtualization-based systems such as Dune~\cite{dune},
+ Arrakis~\cite{arrakis}, and IX~\cite{ix}, have explored how hardware can
+be directly exposed to applications for high-performance or greater
+flexibility. These approaches all depend on the hardware resoures (e.g.,
+NICs, page tables) being paravirtualized by hardware. In contrast, embedded
+systems have no virtualization. Tock applications do not access a virtualized
+SPI bus, they can gain direct access to hardware registers with no subsequent
+OS or hardware arbitration.
+
+Emerging embedded applications and platforms require new abstractions and
+services from their operating systems. Simultaneously, new embedded processors
+provide new mechanisms that are similar to, but distinct from modern and
+earlier CPUs. This combination of application pull and technology push
+creates many interesting problems in operating system design. As pervasive
+computing, ubiquitous computing, sensor networks and the Internet of Things
+all gain momentum, solutions to these problems will be increasingly 
+important. We have presented one initial design for such an operating system,
+called \name, which combines hadware memory protection with a modern
+safe systems language to enable novel capabilities that meet the needs
+of these emerging domains.
