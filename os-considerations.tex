@@ -91,25 +91,32 @@ systems must use the tools at their disposal to achieve similar goals.
 \subsection{Embedded Requirements}
 \label{sec:os:execution}
 
-Porting general-purpose operating systems, like Linux, to microcontrollers is
-not the answer First, embedded systems today are still bound by power
-consumption requirements. Many such embedded devices are battery powered and,
-while microcontrollers have become more featureful, they do not consume less
-power than previous generations.  Second, embedded applications are
+While attractive from a compatibility and bootstrapping perspective,
+porting general-purpose operating systems, like Linux, to microcontrollers is
+not the best solution. First, embedded systems today are still bound by power
+and battery constraints.
+% Many such embedded devices are battery powered and,
+% while microcontrollers have become more featureful, they do not consume less
+% power than previous generations. 
+Second, embedded applications are
 significantly different than applications on general-purpose systems. Embedded
 applications are event-driven, responding to timers, packet arrival, sensor
 interrupts, etc., with short bursts of computation. General-purpose
-applications, on the other hand, typically use
+applications typically use
 threaded execution, which may include long-running computations or latency
-sensitive user interactions. Even where general-purpose systems support
-event-driven programming models has largely focused on
-latency, throughput and scalability~\cite{epoll,libasync,ninja} rather than
-power consumption, which is typically more important in embedded devices.
+sensitive user interactions. General-purpose system support for
+event-driven models has largely focused on
+latency, throughput, and scalability~\cite{epoll,libasync,ninja}, rather than
+power draw, which is typically more important in embedded devices.
 Finally, embedded applications often require direct access to underlying
-hardware resources. Some general-purpose operating systems have attempted to
-make dynamically loaded more safe using lightweight hardware protection
-domains~\cite{nooks}. However, we argue that in embedded systems,
-\emph{applications} should have direct access to hardware resources when those
+hardware resources. Traditional memory protection or 
+% Some general-purpose operating systems have attempted to
+% make dynamically loaded more safe using
+lightweight hardware protection
+domains~\cite{nooks}
+do not offer the flexibility that certain applications may need.
+We argue that in embedded systems,
+applications should have direct access to hardware resources when those
 resources are not shared or the hardware can do isolation by
 itself~\cite{ix:osdi2014}.
 
