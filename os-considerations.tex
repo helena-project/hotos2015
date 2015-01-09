@@ -14,11 +14,16 @@ Apple's iBeacon communicate with mobile devices around them to provide location-
 information. To support multiple applications, one must install multiple iBeacons.
 These applications need to be able directly access hardware devices because embedded 
 systems tightly couple hardware capabilities and applications. For example, 
-modular embedded devices such as SimBand~\cite{simband}, Wzzard~\cite{wzzard},
+modular embedded devices such as Wzzard~\cite{wzzard},
 ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq} allow
 a developer to plug in new sensors and actuators. An OS cannot include
 drivers for all of the tens of thousands of different interfaces, so application
 code needs to be able to safely control hardware extensions.
+
+% Pat: ^^Can't cite simband here, it doesn't make sense,
+%  "Samsung Simband is not a product. It’s a reference design. It’s our
+%  concept of what a smart health device should be."
+
 
 % They do not provide a mechanism for granting applications arbitrary direct
 % hardware access for performance or peripheral requirements purposes.
