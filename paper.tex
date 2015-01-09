@@ -33,6 +33,11 @@
 \usepackage[capitalise,nameinlink,noabbrev]{cleveref}                  % Do the right thing with fig/table references
 
 
+% Break URLs properly (thanks to Alex Halderman)
+\def\UrlBreaks{\do-\do\.\do\@\do\\\do\!\do\_\do\|\do\;\do\>\do\]\do\)\do\,\do\?\do\'\do+\do\=\do\#}
+\def\UrlBigBreaks{\do\:\do\/}
+
+
 \newcommand{\name}{Tock\xspace}
 
 % Some macros that a broadly useful:
