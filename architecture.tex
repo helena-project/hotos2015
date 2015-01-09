@@ -88,19 +88,19 @@ peripherals be connected only to GPIO ports that cannot be exposed.
 
 When a device powers on or resets, \name loads each application by allocating a
 fixed sized memory region for it's stack, heap and data
-(\Cref{sec:arch:memory-design}), configures the MPU, switches to an unprivileged
-execution mode and jumps to the application's {\tt init} function. Application's
-run in a single thread and will not be interrupted by event callbacks until
-either invoking the {\tt wait} system call, or returning from {\tt init} (which is
-an implicit {\tt wait}). While executing, the application can request resources
-(e.g. access to the \emph{TRNG memory mapped registers}), register callbacks for
-events (e.g. a timer or sensor interrupt) and issue commands (e.g. send a packet
-over the radio). Once it has issued the {\tt wait} system call, the kernel
-suspends the application until a relevent event has fired, and a callback can be
-invoked. Finally, the kernel invokes callbacks by pushing an additional stack
-frame onto the application's stack and jumping to the callback function. Thus,
-when a callback function returns, execution is resumed where the {\tt wait}
-system call was invoked.
+(\Cref{sec:arch:memory-design}), configuring the MPU, switching to an
+unprivileged execution mode and jumping to the application's {\tt init}
+function. While executing, the application can request resources (e.g. access to
+the \emph{TRNG memory mapped registers}), register callbacks for events (e.g. a
+timer or sensor interrupt) and issue commands (e.g. send a packet over the
+radio). Applications run in a single thread and will not be interrupted by event
+callbacks until either invoking the {\tt wait} system call, or returning from
+{\tt init} (which is an implicit {\tt wait}). Once an application has issued the
+{\tt wait} system call, the kernel suspends it until a relevent event has fired,
+and a callback can be invoked. Finally, the kernel invokes callbacks by pushing
+an additional stack frame onto the application's stack and jumping to the
+callback function. Thus, when a callback function returns, execution is resumed
+where the {\tt wait} system call was invoked.
 
 
 % \subsection{The Cortex-M MPU}
