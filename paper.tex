@@ -53,16 +53,45 @@
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
 \title{\Large \bf Microcontrollers Deserve Protection Too}
 
-%for single author (just remove % characters)
-%\author{
-%{\rm Your N.\ Here}\\
-%Your Institution
-%\and
-%{\rm Second Name}\\
-%Second Institution
-%} % end author
+\author{
+\begin{tabular}{ccc}
+  \multicolumn{3}{c}{
+    Michael P Andersen$^\dagger$,
+    Tom Bauer$^\ddagger$,
+    Sergio Benitez$^\ddagger$,
+    Bradford Campbell$^\S$,
+    David Culler$^\dagger$,
+  } \\
+  \multicolumn{3}{c}{
+    Prabal Dutta$^\S$,
+    Philip Levis$^\ddagger$,
+    Amit Levy$^\ddagger$,
+    and
+    Pat Pannuto$^\S$
+    \vspace{0.3cm}
+  } \\
+  %
+  \small{$^\dagger$Computer Science \& Engineering} &
+  \small{$^\ddagger$Computer Science \& Engineering} &
+  \small{$^\S$Computer Science \& Engineering} \\
+  %
+  \small{University of California, Berkeley} &
+  \small{Stanford University} &
+  \small{University of Michigan} \\
+  %
+  \small{Berkeley, CA 94720} &
+  \small{Stanford, CA 94305} &
+  \small{Ann Arbor, MI 48109} \\
+  %
+  \small{\{m.andersen,culler\}@berkeley.edu} &
+  \small{\{tbauer01,sbenitez,pal,levya\}@stanford.edu} &
+  \small{\{bradjc,prabal,ppannuto\}@umich.edu} \\
+\end{tabular}
+}
 
 \maketitle
+
+\let\thefootnote\relax\footnote{Authors listed in alphabetical order.}
 
 % Use the following at camera-ready time to suppress page numbers.
 % Comment it out when you first submit the paper for review.
@@ -71,6 +100,7 @@
 \begin{abstract}
 \input{abstract}
 \end{abstract}
+
 \input{intro}
 \input{os-considerations}
 \input{protection}
