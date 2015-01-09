@@ -2,23 +2,20 @@
 \label{os-considerations}
 %\subsection{Evolved Embedded Applications}
 
-Tanenbaum's \emph{Modern Operating Systems} asserts, ``The main property
-which distinguishes embedded systems from handhelds is the certainty that no
-untrusted software will ever run on it''~\cite{tanenbaum}. This was once
-true, but is no longer the case. Embedded systems are evolving to
-require two key primitives: application isolation and application-controlled
-device access.
-The  Pebble~\cite{pebble} watch, for example, supports multiple dynamically loadable
-applications that interact with a mobile device. Infrastructure systems such as
-Apple's iBeacon communicate with mobile devices around them to provide location-dependent
-information. To support multiple applications, one must install multiple iBeacons.
-These applications need to be able directly access hardware devices because embedded 
-systems tightly couple hardware capabilities and applications. For example, 
-modular embedded devices such as Wzzard~\cite{wzzard},
-ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq} allow
-a developer to plug in new sensors and actuators. An OS cannot include
-drivers for all of the tens of thousands of different interfaces, so application
-code needs to be able to safely control hardware extensions.
+Tanenbaum's \emph{Modern Operating Systems} asserts, ``The main property which
+distinguishes embedded systems from handhelds is the certainty that no untrusted
+software will ever run on it''~\cite{tanenbaum}. This was once true, but is no
+longer the case. The Pebble~\cite{pebble} watch, for example, allows users to
+load multiple third-party applications dynamically. On the other hand,
+applications for embedded systems have not become more like their
+general-purpose counterparts. Specifically, applications are still primarily
+event-driven with short bursts of computation rather than long running or
+user-interactive. Moreover, neither sleep currents or battery capacity have
+changed significantly over the past decade, so next-generation embedded systems
+are still concerned with minimizing power consumption.  As a result, embedded
+systems are evolving to have requirements decendent from both previous embedded
+systems and general-purpose systems. The juxtaposition of these requirements
+carves a unique design space in operating systems research.
 
 % Pat: ^^Can't cite simband here, it doesn't make sense,
 %  "Samsung Simband is not a product. It’s a reference design. It’s our
