@@ -48,7 +48,7 @@ MPUs are much more fine-grained than typical virtual memory. MPUs are able to
 address regions as small a 32~bytes, whereas MMUs typically use at least 4~KB
 pages. Moreover, MPUs support regions of any size that is a power of two larger
 than 32 bytes (27 sizes in practice)~\cite{cortexm4-ug:ch4.5}, whereas MMUs
-support a limited number of page sizes~\endnote{The Itanium architecture
+support a limited number of page sizes\endnote{The Itanium architecture
 supports eight page sizes, while x86 and ARMv7 both only support three}
 MPUs do not, however, perform any translation, so mechanisms such as swap and
 dynamic page allocation may not be feasible.
