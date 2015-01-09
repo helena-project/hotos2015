@@ -4,7 +4,7 @@ As networking became an integral part of computing through the Internet and
 world wide web, system security grew in importance from a niche interest of the
 military into a core requirement for operating systems. While far from perfect,
 today's general purpose operating systems support firewalls, NATs, encrypted
-networking~\cite{tcpcrypt}, no-execute bits, radomized memory allocation, and
+networking, no-execute bits, radomized memory allocation, and
 host of other security features. With the growth in network connected embedded
 devices, it is time for embedded operating systems to follow suit.
 
@@ -39,15 +39,15 @@ between full-fledged CPUs and microcontrollers. Like some mid-1980s processors,
 they have a 32-bit address space, memory protection, and run at tens of MHz.
 Like microcontrollers, they have tens to a few hundred KB of RAM, provide many
 peripherals and bus interconnects (SPI, I2C, one-wire, UART/USART, etc.) and
-have sub-\uA sleep currents~\endnote{allowing them to operate on a battery for
-months or years}. The Atmel SAM4l~\cite{sam4l}, for example, is a
+have sub-\uA sleep currents, allowing them to operate on a battery for
+months or years. The Atmel SAM4l~\cite{sam4l}, for example, is a
 microcontroller with a Cortex-M4 processor (40MHz, 64KB RAM, 512KB flash), a
-plethora of periherals (4 USARTs, 2 SPIs, 6 timers, native AES and random number
-generator, etc) and has a sleep current as low as $0.9$~\uA.
+plethora of periherals (4 USARTs, 2 SPIs, 6 timers, native AES and a random number
+generator) and has a sleep current as low as $0.9$~\uA.
 
-Most importantly, this new generation of microcontrollers includes a feature
-called memory protection, which can protect kernel memory, memory mapped I/O
-from applications and application memory from other application. However, this
+Most importantly to an operating system, this new generation of microcontrollers include
+memory protection, which can protect kernel memory, memory mapped I/O
+from applications and application memory from other applications. However,
 isolation and safety is only as good as the kernel itself. As numerous recent
 results show, OS kernels contain scores of memory access bugs that applications
 can use to exploit to crash a system or gain unauthorized
@@ -55,19 +55,19 @@ access~\cite{nickolai}. By writing the OS kernel in a type-safe, memory-safe
 language with strong semantics, we can eliminate whole classes of
 vulnerabilities. The relative simplicity of Cortex-M processors and embedded
 operating system APIs means that writing such a kernel is a manageable task.
-This makes an embedded OS a particularly interesting avenue for research in
+This makes an embedded OSes especially well suited for research in
 secure operating systems design.
 % still open to easy extension and evolution.
 
-It is time for embedded operating systems evolve! Today, embedded operatingy
-systems are libraries that ease software development. In this paper, we argue
-that the embedded operating system should be one that enables and encourages
-multiple concurrent, isolated applications, provides both hardware abstractions
-and low-level hardware access, and offers critical services to the applications
-of the Internet of Things. In particular, we discuss three protection
+It is time for embedded operating systems evolve! In this paper, we argue
+that an embedded operating system should be more than a hardware API.
+It should enable and encourage
+multiple concurrent, isolated applications, provide  hardware abstractions
+as well as low-level hardware access, and offer critical services to Internet
+of Things applications. We discuss three protection
 mechanism---language level isolation, software mediated hardware protection and
-multiple isolated processors---we think operating systems should utilize to
-address these goals.
+multiple isolated processors---operating systems should utilize to achieve
+these goals.
 
 %(alevy): I don't think we need this in the intro.
 %As a concrete example of what such an operating

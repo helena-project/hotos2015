@@ -2,20 +2,23 @@
 \label{os-considerations}
 %\subsection{Evolved Embedded Applications}
 
-Embedded operating systems once shifted from monolithic applications to separate
-operating system and application code that are compiled to monolithic
-applications. Now, the operating system must shift again to support multiple and
-independently developed applications co-existing on the same device
-(Pebble~\cite{pebble} watch), and modular embedded devices
-(SimBand~\cite{simband}, Wzzard~\cite{wzzard},
-ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq}).
-While traditional operating systems handle independently developed applications,
-they cannot simply be applied to the embedded domain. They assume virtual memory
-for protection and isolation and are not designed to take advantage of MPUs
-present in embedded hardware. They trust that drivers are written correctly,
-granting them full access to kernel structures and memory, and fail when bugs
-are present. Lastly, they are designed for cooperative cores with shared memory,
-rather than physically isolated microcontrollers with private memories.
+Tanenbaum's \emph{Modern Operating Systems} asserts, ``The main property
+which distinguishes embedded systems from handhelds is the certainty that no
+untrusted software will ever run on it''~\cite{tanenbaum}. This was once
+true, but is no longer the case. Embedded systems are evolving to
+require two key primitives: application isolation and application-controlled
+device access.
+The  Pebble~\cite{pebble} watch, for example, supports multiple dynamically loadable
+applications that interact with a mobile device. Infrastructure systems such as
+Apple's iBeacon communicate with mobile devices around them to provide location-dependent
+information. To support multiple applications, one must install multiple iBeacons.
+These applications need to be able directly access hardware devices because embedded 
+systems tightly couple hardware capabilities and applications. For example, 
+modular embedded devices such as SimBand~\cite{simband}, Wzzard~\cite{wzzard},
+ThinkingThings~\cite{thinkingthings}, and Spotter UNIQ~\cite{spotteruniq} allow
+a developer to plug in new sensors and actuators. An OS cannot include
+drivers for all of the tens of thousands of different interfaces, so application
+code needs to be able to safely control hardware extensions.
 
 % They do not provide a mechanism for granting applications arbitrary direct
 % hardware access for performance or peripheral requirements purposes.
@@ -57,27 +60,18 @@ rather than physically isolated microcontrollers with private memories.
 % protecting the application from malicious or malfunctioning applications and
 % peripherals.
 
-Given the paradigm shift in embedded devices and the inadequacy of current
-operating system solutions, we propose a design for a new operating system,
-\name, that supports a range of goals: an embedded-friendly execution model,
-loadable applications, services, and drivers, and an architecture that
-promotes robustness, reliability, safety and efficiency.
-
-
-
-
 \subsection{Application Execution Model}
 \label{sec:os:execution}
 
 Most traditional operating systems support a sequential, threaded application
-execution model, whereas \name is based on an event-driven model. Event-driven
+execution model. Embedded systems, in contrast, rely on an event-driven model. 
+Event-driven
 better matches the needs of embedded applications which typically wait and
 respond to events, e.g. timer firings, packet receptions, sensor interrupts,
 and have bursty periods of computation rather than long-running operations.
 The absence of multiple shared-memory cores on embedded microcontrollers also
-reduces the usefulness of threaded execution. Further, considering the
-resource constraints of microcontrollers, restricting execution to a single
-thread reduces the complexity of system and application design.
+reduces the usefulness of threaded execution. Further restricting execution to a
+single thread system and application design complexity.
 % Pat: I've improved, but still don't love this last sentence.
 
 
@@ -124,17 +118,6 @@ simple and safe means to add new drivers.
 % server, it is unacceptable in embedded systems. Moreover, given the variety of
 % devices, the OS should allow developer to use any language supporting
 % Application Binary Interface, ABI.
-
-
-
-\subsection{Robust, Reliable, Safe and Efficient}
-
-
-[ This needs to be filled in. What should it be saying? ]
-
-Note: Are we comparing against desktop OSs or other embedded OSs? The intro
-to the this section assumes the former, but this paragraph discusses the
-latter.
 
 % With resource sharing between applications and the end of exclusively trusted
 % software on embedded devices comes the need for better protection guarantees

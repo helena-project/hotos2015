@@ -1,17 +1,21 @@
-\section{The Next-Generation Embedded OS:\\Protection \emph{is} a New Primitive}
+\section{Protection \emph{is} a New Primitive}
 \label{protection}
 
 % pp 33--34, ch 1, sec 4:
-In Tanenbaum's \emph{Modern Operating Systems} he asserts, ``The main property
-which distinguishes embedded systems from handhelds is the certainty that no
-untrusted software will ever run on it''~\cite{tanenbaum}. In this paper we
-argue that this is no longer the case. Embedded systems are evolving beyond the
-single-application case and now require an operating system that provides
-protection to applications in the form of isolation and resource arbitration.
+
 %
 This section examines recent advances and trends in embedded hardware and
 programming languages that enable novel protection primitives in constrained
 systems.
+
+While traditional operating systems handle independently developed applications,
+they cannot simply be applied to the embedded domain. They assume virtual memory
+for protection and isolation and are not designed to take advantage of MPUs
+present in embedded hardware. They trust that drivers are written correctly,
+granting them full access to kernel structures and memory, and fail when bugs
+are present. Lastly, they are designed for cooperative cores with shared memory,
+rather than physically isolated microcontrollers with private memories.
+
 
 \subsection{Hardware Advances and Trends}
 
