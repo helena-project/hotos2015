@@ -16,9 +16,11 @@ strict aliasing can provide support for operating system protection.
 Memory safety bugs---dangling pointers, double-frees, access to unallocated
 memory, and pointer arithmetic errors---plague operating systems written in
 languages with weak memory semantics. Languages that guarantee memory safety
-obviate such bugs by catching them at compile-time. For instance, a kernel
-written in a memory safe language can enforce memory isolation of drivers at
-compile time without relying on hardware support~\cite{spin:sosp}.
+obviate such bugs by catching them at compile-time\footnote{Some languages, like
+Java, are considered memory safe, but do not offer such strong guarantees.
+However many, such as Haskell and ML, do.}. For instance, a kernel written in a
+memory safe language can enforce memory isolation of drivers at compile time
+without relying on hardware support~\cite{spin:sosp}.
 
 {\bf Type Safety.}
 Strong, strict types enable low-level hardware to be exposed through typed

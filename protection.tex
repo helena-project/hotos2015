@@ -21,7 +21,7 @@ rather than physically isolated microcontrollers with private memories.
 
 New embedded system platforms will be built on the Cortex-M series of microcontrollers.
 While ARM's A-series is substantially more capable and is used in wall-powered
-devices such as the Raspberry Pi~\cite{rpi} and BeagleBone Black~\cite{bbb},
+devices such as the HummingBoard~\cite{hummingboard} and BeagleBone Black~\cite{bbb},
 its significant power draw (over 1~W in active mode) make it infeasible for
 low-power, battery operated devices.
 In contrast, Cortex-M series microcontrollers have power draws conducive to
@@ -64,7 +64,7 @@ different energy profile. Multiple processors provide an opportunity for the
 strictest isolation, stochastic and deterministic real-time schedules, and
 computation offloading.
 Existing operating systems have not needed to provide abstractions for multiple
-microcontrollers and how to create these abstractions is an open question.
+microcontrollers what these abstractions should be is an open question.
 % It is less clear, however, how to abstract system-specific hardware for general
 % applications and is an open question in the design of a new operating system.
 
